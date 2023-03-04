@@ -2,7 +2,7 @@ import {createElement} from '../render.js';
 
 
 const createEventAddTemplate = () => (
-    `<form class="event event--edit" action="#" method="post">
+  `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -158,15 +158,15 @@ const createEventAddTemplate = () => (
 );
 export default class EventAddView {
     getTemplate() {
-        return createEventAddTemplate();
+      return createEventAddTemplate();
     }
     getElement() {
-        if (!this.element) {
-            this.element = createElement(this.getTemplate());
-        }
-        return this.element;
+      if (!this.element) {
+          this.element = createElement(this.getTemplate());
+      }
+      return this.element;
     }
     removeElement() {
-        this.element = null;
+      this.element = null;
     }
 }
