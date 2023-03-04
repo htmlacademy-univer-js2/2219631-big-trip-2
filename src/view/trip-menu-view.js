@@ -12,12 +12,14 @@ export default class MenuView {
     getTemplate() {
         return createMenuTemplate();
     }
+
     getElement() {
         if (!this.element) {
             this.element = createElement(this.getTemplate());
         }
         return this.element;
     }
+    
     removeElement() {
         this.element = null;
     }

@@ -3,7 +3,7 @@ import EventView from '../view/event-view';
 import EventListView from '../view/event-list-view';
 import EventEditView from '../view/event-edit-view';
 import SortView from '../view/sort-view';
-import { render, RenderPosition } from '../render';
+import { render } from '../render';
 
 export default class TripPresenter{
   constructor(tripContainer){

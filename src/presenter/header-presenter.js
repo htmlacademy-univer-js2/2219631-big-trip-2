@@ -10,9 +10,10 @@ export default class HeaderPresenter{
     this.menu = new MenuView();
     this.filter = new FilterView();
   }
+
   init(){
-      render(this.tripInfo, this.headerContainter, RenderPosition.AFTERBEGIN);
-      render(this.menu, this.headerContainter.querySelector('.trip-controls__navigation'));
-      render(this.filter, this.headerContainter.querySelector('.trip-controls__filters'));
+    render(this.tripInfo, this.headerContainter, RenderPosition.AFTERBEGIN);
+    render(this.menu, this.headerContainter.querySelector('.trip-controls__navigation'));
+    render(this.filter, this.headerContainter.querySelector('.trip-controls__filters'));
   }
 }

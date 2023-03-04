@@ -157,16 +157,18 @@ const createEventAddTemplate = () => (
   </form>`
 );
 export default class EventAddView {
-    getTemplate() {
-      return createEventAddTemplate();
+  getTemplate() {
+    return createEventAddTemplate();
+  }
+  
+  getElement() {
+    if (!this.element) {
+      this.element = createElement(this.getTemplate());
     }
-    getElement() {
-      if (!this.element) {
-          this.element = createElement(this.getTemplate());
-      }
-      return this.element;
-    }
-    removeElement() {
-      this.element = null;
-    }
+    return this.element;
+  }
+
+  removeElement() {
+    this.element = null;
+  }
 }
