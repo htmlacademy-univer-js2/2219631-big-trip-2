@@ -160,7 +160,7 @@ export default class EventEditView {
   getTemplate() {
     return createEventEditTemplate();
   }
-  
+
   getElement() {
     if (!this.element) {
       this.element = createElement(this.getTemplate());

@@ -1,7 +1,7 @@
 import {createElement} from '../render.js';
 
 const createEventOffersTemplate = () => (
-    `<section class="event__section  event__section--offers">
+  `<section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
         <div class="event__available-offers">
@@ -54,18 +54,18 @@ const createEventOffersTemplate = () => (
 );
 
 export default class EventOffersView {
-    getTemplate() {
-        return createEventOffersTemplate();
-    }
+  getTemplate() {
+    return createEventOffersTemplate();
+  }
 
-    getElement() {
-        if (!this.element) {
-            this.element = createElement(this.getTemplate());
-        }
-        return this.element;
+  getElement() {
+    if (!this.element) {
+      this.element = createElement(this.getTemplate());
     }
+    return this.element;
+  }
 
-    removeElement() {
-        this.element = null;
-    }
+  removeElement() {
+    this.element = null;
+  }
 }

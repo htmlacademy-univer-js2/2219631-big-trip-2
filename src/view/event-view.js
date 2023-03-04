@@ -2,7 +2,7 @@ import {createElement} from '../render.js';
 
 
 const createEventTemplate = () => (
-    `<li class="trip-events__item">
+  `<li class="trip-events__item">
         <div class="event">
         <time class="event__date" datetime="2019-03-18">MAR 18</time>
         <div class="event__type">
@@ -42,18 +42,18 @@ const createEventTemplate = () => (
 );
 
 export default class EventView {
-    getTemplate() {
-        return createEventTemplate();
-    }
+  getTemplate() {
+    return createEventTemplate();
+  }
 
-    getElement() {
-        if (!this.element) {
-            this.element = createElement(this.getTemplate());
-        }
-        return this.element;
+  getElement() {
+    if (!this.element) {
+      this.element = createElement(this.getTemplate());
     }
+    return this.element;
+  }
 
-    removeElement() {
-        this.element = null;
-    }
+  removeElement() {
+    this.element = null;
+  }
 }
