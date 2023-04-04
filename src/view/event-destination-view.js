@@ -4,8 +4,8 @@ const createEventDestinationTemplate = (tripEvent) => {
   if(tripEvent.destination.description.length || tripEvent.destination.pictures.length) {
     const pictures = tripEvent.destination.pictures.map((picture) =>
       `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('');
-  return(
-    `<section class="event__section  event__section--destination">
+    return(
+      `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
     <p class="event__destination-description">${tripEvent.destination.description}</p>
     <div class="event__photos-container">
@@ -14,15 +14,16 @@ const createEventDestinationTemplate = (tripEvent) => {
       </div>
     </div>
   </section>`
-  );
+    );
   }
   return '<section class="event__section  event__section--destination"></section>';
-}
+};
 
 export default class EventDestinationView {
   constructor (tripEvent) {
     this.tripEvent = tripEvent;
   }
+
   getTemplate() {
     return createEventDestinationTemplate(this.tripEvent);
   }

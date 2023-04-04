@@ -4,7 +4,7 @@ import TripEventsModel from './model/events-model.js';
 import OfferByTypeModel from './model/offer-model.js';
 import EventDestinationModel from './model/destination-model.js';
 
-const event_count = 20;
+const eventCount = 20;
 
 const tripMainElement = document.querySelector('.trip-main');
 const headerPresenter = new HeaderPresenter(tripMainElement);
@@ -12,9 +12,9 @@ const headerPresenter = new HeaderPresenter(tripMainElement);
 const eventComponent = document.querySelector('.trip-events');
 ///const eventPresenter = new TripPresenter(eventElement);
 const offerModel = new OfferByTypeModel();
-const destinationModel = new EventDestinationModel(event_count);
-const eventPresenter = new TripPresenter(eventComponent, new TripEventsModel(event_count, offerModel.getOffers().length, 
-destinationModel.getDestinations()), offerModel)
+const destinationModel = new EventDestinationModel(eventCount);
+const eventPresenter = new TripPresenter(eventComponent, new TripEventsModel(eventCount, offerModel.getOffers().length,
+  destinationModel.getDestinations()), offerModel);
 
 headerPresenter.init();
 eventPresenter.init();

@@ -1,4 +1,4 @@
-import { generateEventDestination } from "../mock/event-destination";
+import { generateEventDestination } from '../mock/event-destination';
 
 export default class TripEventDestinationModel{
   constructor(eventsCount) {

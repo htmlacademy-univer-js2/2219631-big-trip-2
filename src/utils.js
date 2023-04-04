@@ -9,14 +9,14 @@ const getRandomInteger = (min, max) => {
   }
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
-  
+
 const shuffle = (array) => {
   for(let firstIndex = array.length - 1; firstIndex > 0; firstIndex--) {
     const randomIndex = Math.floor(Math.random() * (firstIndex + 1));
     [array[firstIndex], array[randomIndex]] = [array[randomIndex], array[firstIndex]];
   }
-  return array
-}
+  return array;
+};
 
 const uppperFirstSymbol = (x) => x.charAt(0).toUpperCase() + x.slice(1);
 const type = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];

@@ -90,11 +90,12 @@ const createEventAddTemplate = (tripEvent) => {
       </form>
     </li>`
   );
-}
+};
 export default class EventAddView {
   constructor (tripEvent) {
     this.tripEvent = tripEvent;
   }
+
   getTemplate() {
     return createEventAddTemplate(this.tripEvent);
   }

@@ -7,7 +7,7 @@ import EventOffersView from '../view/event-offers-view';
 import EventDestinationView from '../view/event-destination-view';
 import { render } from '../render';
 
-const min_index = 2
+const minIndex = 2;
 
 export default class TripPresenter{
   constructor(tripEventsComponent, tripEventsModel, offersModel){
@@ -23,6 +23,7 @@ export default class TripPresenter{
     this.addEvent = new EventAddView(this.tripEvents[0]);
     this.editEvent = new EventEditView(this.tripEvents[1]);
   }
+
   renderTripEventForm(editForm){
     render(editForm, this.tripEventsList.getElement());
     render(new EventOffersView(editForm.tripEvent, this.offersByType),editForm.getElement().querySelector('.event__details'));
@@ -35,7 +36,7 @@ export default class TripPresenter{
 
     this.renderTripEventForm(this.addEvent);
     this.renderTripEventForm(this.editEvent);
-    for (let i = min_index; i<this.tripEvents.length; i++){
+    for (let i = minIndex; i<this.tripEvents.length; i++){
       render(new EventView(this.tripEvents[i],this.offersByType),this.tripEventsList.getElement());
     }
   }

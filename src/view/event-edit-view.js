@@ -91,15 +91,17 @@ const createEventEditTemplate = (tripEvent) => {
       </section>
     </form>`
   );
-}
+};
 export default class EventEditView {
   constructor (tripEvent) {
     this.tripEvent = tripEvent;
   }
+
   getTemplate()
   {
     return createEventEditTemplate(this.tripEvent);
   }
+
   getElement() {
     if (!this.element) {
       this.element = createElement(this.getTemplate());
