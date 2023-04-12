@@ -93,23 +93,30 @@ const createEventEditTemplate = (tripEvent) => {
   );
 };
 export default class EventEditView {
+  #tripEvent;
+  #element;
   constructor (tripEvent) {
-    this.tripEvent = tripEvent;
+    this.#tripEvent = tripEvent;
+    this.#element = null;
   }
 
-  getTemplate()
+  get tripEvent() {
+    return this.#tripEvent;
+  }
+
+  get template()
   {
-    return createEventEditTemplate(this.tripEvent);
+    return createEventEditTemplate(this.#tripEvent);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

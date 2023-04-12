@@ -21,4 +21,11 @@ const shuffle = (array) => {
 const uppperFirstSymbol = (x) => x.charAt(0).toUpperCase() + x.slice(1);
 const type = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
-export {getRandomInteger, shuffle, uppperFirstSymbol, type};
+const pointMode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
+const isEscapePushed = (evt) => evt.key === 'Escape';
+
+export {getRandomInteger, shuffle, uppperFirstSymbol, type, pointMode, isEscapePushed};
