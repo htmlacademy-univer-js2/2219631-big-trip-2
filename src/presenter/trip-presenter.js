@@ -6,7 +6,7 @@ import EventOffersView from '../view/event-offers-view';
 import EventDestinationView from '../view/event-destination-view';
 import EventAddView from '../view/event-add-view';
 import { render } from '../render';
-import { isEscapePushed } from '../utils';
+import { pointMode } from '../utils';
 
 
 export default class TripPresenter{
@@ -16,7 +16,7 @@ export default class TripPresenter{
   #offersByType;
   #tripEventsComponent;
   #tripEventsList;
-  #newTripEvent;
+  #eventForm;
 
   constructor(tripEventsComponent, tripEventsModel, offersModel){
     this.#tripEventsModel = tripEventsModel;
@@ -28,45 +28,56 @@ export default class TripPresenter{
     this.#tripEventsComponent = tripEventsComponent;
     this.#tripEventsList = new EventListView();
 
-    this.#newTripEvent = new EventAddView(this.#tripEvents[0]);
-  }
-
-  #renderTripEventForm(editForm){
-    render(editForm, this.#tripEventsList.element);
-    render(new EventOffersView(editForm.tripEvent, this.#offersByType), editForm.element.querySelector('.event__details'));
-    render(new EventDestinationView(editForm.tripEvent), editForm.element.querySelector('.event__details'));
+    this.#eventForm = new Map();
   }
 
   #renderTripEvent(tripEvent) {
     const newEvent = new EventView(tripEvent, this.#offersByType);
-    const tripEventEditForm = new EventEditView(tripEvent);
+    const eventEdit = new EventEditView(tripEvent);
 
-    const eventDetailsComponent = tripEventEditForm.element.querySelector('.event__details');
-    const offersComponent = new EventOffersView(tripEventEditForm.tripEvent, this.#offersByType);
-    const destination = new EventDestinationView(tripEventEditForm.tripEvent);
+    const eventDetails = eventEdit.element.querySelector('.event__details');
+    const offers = new EventOffersView(eventEdit.tripEvent, this.#offersByType);
+    const destination = new EventDestinationView(eventEdit.tripEvent);
 
-    eventDetailsComponent.appendChild(offersComponent.element);
-    eventDetailsComponent.appendChild(destination.element);
+    render(offers, eventDetails);
+    render(destination, eventDetails);
 
     const replaceEventListChildren = (newChild, oldChild) => {
       this.#tripEventsList.element.replaceChild(newChild, oldChild);
     };
 
     const onEscapeKeyDown = (evt) => {
-      if(isEscapePushed(evt)){
+      if(evt.key === 'Escape' || evt.key === 'Esc'){
         evt.preventDefault();
-        replaceEventListChildren(newEvent.element, tripEventEditForm.element);
+        if (newEvent.pointMode = pointMode.EDITING){
+          replaceEventListChildren(newEvent.element, eventEdit.element);
+        }
+        newEvent.pointMode = pointMode.DEFAULT;
         document.removeEventListener('keydown', onEscapeKeyDown);
       }
     };
 
+    const closeAllForms = () => {
+      for (const [point, eventForm] of this.#eventForm){
+        if(point.pointMode === pointMode.EDITING){
+          point.pointMode = pointMode.DEFAULT;
+          replaceEventListChildren(point.element, eventForm.element);
+        }
+      }
+    };
+
     const onFormOpenButtonClick = () => {
-      replaceEventListChildren(tripEventEditForm.element, newEvent.element);
+      closeAllForms();
+      newEvent.pointMode = pointMode.EDITING;
+      replaceEventListChildren(eventEdit.element, newEvent.element);
       document.addEventListener('keydown', onEscapeKeyDown);
     };
 
     const onFormCloseButtonClick = () => {
-      replaceEventListChildren(newEvent.element, tripEventEditForm.element);
+      if (newEvent.pointMode = pointMode.EDITING){
+      replaceEventListChildren(newEvent.element, eventEdit.element);
+      }
+      newEvent.pointMode = pointMode.DEFAULT;
       document.removeEventListener('keydown', onEscapeKeyDown);
     };
 
@@ -76,11 +87,9 @@ export default class TripPresenter{
     };
 
     newEvent.element.querySelector('.event__rollup-btn').addEventListener('click', onFormOpenButtonClick);
-
-    tripEventEditForm.element.addEventListener('submit', onEditFormSubmit);
-
-    tripEventEditForm.element.querySelector('.event__rollup-btn').addEventListener('click', onFormCloseButtonClick);
-
+    eventEdit.element.addEventListener('submit', onEditFormSubmit);
+    eventEdit.element.querySelector('.event__rollup-btn').addEventListener('click', onFormCloseButtonClick);
+    this.#eventForm.set(newEvent, eventEdit);
     render(newEvent, this.#tripEventsList.element);
   }
 
@@ -88,9 +97,7 @@ export default class TripPresenter{
     render(new SortView(), this.#tripEventsComponent);
     render(this.#tripEventsList, this.#tripEventsComponent);
 
-    this.#renderTripEventForm(this.#newTripEvent);
-
-    for(let i = 2; i < this.#tripEvents.length; i++) {
+    for(let i = 0; i < this.#tripEvents.length; i++) {
       this.#renderTripEvent(this.#tripEvents[i]);
     }
   }
