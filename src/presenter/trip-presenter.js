@@ -5,7 +5,8 @@ import SortView from '../view/sort-view';
 import EventOffersView from '../view/event-offers-view';
 import EventDestinationView from '../view/event-destination-view';
 import { render } from '../render';
-import { pointMode } from '../utils';
+import { pointMode, filters } from '../utils';
+import NoEventView from '../view/event-empty';
 
 
 export default class TripPresenter{
@@ -16,6 +17,7 @@ export default class TripPresenter{
   #tripEventsComponent;
   #tripEventsList;
   #eventForm;
+  #filters;
 
   constructor(tripEventsComponent, tripEventsModel, offersModel){
     this.#tripEventsModel = tripEventsModel;
@@ -28,6 +30,7 @@ export default class TripPresenter{
     this.#tripEventsList = new EventListView();
 
     this.#eventForm = new Map();
+    this.#filters = filters.EVERYTHING;
   }
 
   #renderTripEvent(tripEvent) {
@@ -93,6 +96,11 @@ export default class TripPresenter{
   }
 
   init() {
+    if (this.#tripEvents.length === 0){
+      render (new NoEventView(this.#filters), this.#tripEventsComponent);
+      return;
+    }
+
     render(new SortView(), this.#tripEventsComponent);
     render(this.#tripEventsList, this.#tripEventsComponent);
 
