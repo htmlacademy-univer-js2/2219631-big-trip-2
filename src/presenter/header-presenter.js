@@ -8,7 +8,7 @@ export default class HeaderPresenter{
   #tripInfo;
   #menu;
   #filter;
-  
+
   constructor(headerContainer){
     this.#headerContainer = headerContainer;
     this.#tripInfo = new TripInfoView();

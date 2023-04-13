@@ -10,7 +10,7 @@ const createMenuTemplate = () => (
 
 export default class MenuView {
   #element;
-  
+
   constructor() {
     this.#element = null;
   }

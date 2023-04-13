@@ -4,7 +4,6 @@ import EventEditView from '../view/event-edit-view';
 import SortView from '../view/sort-view';
 import EventOffersView from '../view/event-offers-view';
 import EventDestinationView from '../view/event-destination-view';
-import EventAddView from '../view/event-add-view';
 import { render } from '../render';
 import { pointMode } from '../utils';
 
@@ -49,7 +48,7 @@ export default class TripPresenter{
     const onEscapeKeyDown = (evt) => {
       if(evt.key === 'Escape' || evt.key === 'Esc'){
         evt.preventDefault();
-        if (newEvent.pointMode = pointMode.EDITING){
+        if (newEvent.pointMode === pointMode.EDITING){
           replaceEventListChildren(newEvent.element, eventEdit.element);
         }
         newEvent.pointMode = pointMode.DEFAULT;
@@ -74,8 +73,8 @@ export default class TripPresenter{
     };
 
     const onFormCloseButtonClick = () => {
-      if (newEvent.pointMode = pointMode.EDITING){
-      replaceEventListChildren(newEvent.element, eventEdit.element);
+      if (newEvent.pointMode === pointMode.EDITING){
+        replaceEventListChildren(newEvent.element, eventEdit.element);
       }
       newEvent.pointMode = pointMode.DEFAULT;
       document.removeEventListener('keydown', onEscapeKeyDown);

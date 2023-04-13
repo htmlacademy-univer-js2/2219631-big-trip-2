@@ -13,7 +13,7 @@ const headerPresenter = new HeaderPresenter(headerContainer);
 
 const offerModel = new OfferByTypeModel();
 const destinationModel = new TripEventDestinationModel(eventCount);
-const eventPresenter = new TripPresenter(eventComponent, 
+const eventPresenter = new TripPresenter(eventComponent,
   new TripEventsModel(eventCount, offerModel.offers.length, destinationModel.destinations), offerModel);
 
 headerPresenter.init();

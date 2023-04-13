@@ -23,11 +23,11 @@ const createFilterTemplate = () => (
 
 export default class FilterView {
   #element;
-  
+
   constructor() {
     this.#element = null;
   }
-  
+
   get template() {
     return createFilterTemplate();
   }
