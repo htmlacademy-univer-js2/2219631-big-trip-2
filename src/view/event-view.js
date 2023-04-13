@@ -1,6 +1,6 @@
 import {createElement} from '../render.js';
 import { humanizeEventTime, getTimeDifference } from '../event-date.js';
-import { uppperFirstSymbol } from '../utils.js';
+import { pointMode, uppperFirstSymbol } from '../utils.js';
 
 
 const createEventTemplate = (tripEvent, offersByType) => {
@@ -57,24 +57,29 @@ const createEventTemplate = (tripEvent, offersByType) => {
 };
 
 export default class EventView {
+  #tripEvent;
+  #offersByType;
+  #element;
 
   constructor(tripEvent, offersByType) {
-    this.tripEvent = tripEvent;
-    this.offersByType = offersByType;
+    this.#tripEvent = tripEvent;
+    this.#offersByType = offersByType;
+    this.pointMode = pointMode.DEFAULT;
+    this.#element = null;
   }
 
-  getTemplate() {
-    return createEventTemplate(this.tripEvent, this.offersByType);
+  get template() {
+    return createEventTemplate(this.#tripEvent, this.#offersByType);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

@@ -37,23 +37,28 @@ const createEventOffersTemplate = (tripEvent, offersByType) => {
 };
 
 export default class EventOffersView {
+  #tripEvent;
+  #offersByType;
+  #element;
+
   constructor(tripEvent, offersByType) {
-    this.tripEvent = tripEvent;
-    this.offersByType = offersByType;
+    this.#tripEvent = tripEvent;
+    this.#offersByType = offersByType;
+    this.#element = null;
   }
 
-  getTemplate() {
-    return createEventOffersTemplate(this.tripEvent, this.offersByType);
+  get template() {
+    return createEventOffersTemplate(this.#tripEvent, this.#offersByType);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
