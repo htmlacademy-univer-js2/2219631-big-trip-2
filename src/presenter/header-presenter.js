@@ -1,7 +1,7 @@
 import TripInfoView from '../view/trip-info-view';
 import FilterView from '../view/filter-view';
 import MenuView from '../view/trip-menu-view';
-import { render, RenderPosition } from '../render';
+import { render, RenderPosition } from '../framework/render';
 
 export default class HeaderPresenter{
   #headerContainer;

@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createEventDestinationTemplate = (tripEvent) => {
   if(tripEvent.destination.description.length || tripEvent.destination.pictures.length) {
@@ -19,26 +19,14 @@ const createEventDestinationTemplate = (tripEvent) => {
   return '<section class="event__section  event__section--destination"></section>';
 };
 
-export default class EventDestinationView {
+export default class EventDestinationView extends AbstractView {
   #tripEvent;
-  #element;
   constructor (tripEvent) {
+    super();
     this.#tripEvent = tripEvent;
-    this.#element = null;
   }
 
   get template() {
     return createEventDestinationTemplate(this.#tripEvent);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

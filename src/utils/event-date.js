@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getRandomInteger } from './utils';
+import { getRandomInteger } from './common';
 
 const eventTimeGap = 480;
 const maxEventDuration = 48;

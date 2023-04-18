@@ -1,6 +1,6 @@
-import {createElement} from '../render.js';
-import { humanizeEventTime, getTimeDifference } from '../event-date.js';
-import { pointMode, uppperFirstSymbol } from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import { humanizeEventTime, getTimeDifference } from '../utils/event-date.js';
+import { pointMode, uppperFirstSymbol } from '../utils/common.js';
 
 
 const createEventTemplate = (tripEvent, offersByType) => {
@@ -56,30 +56,30 @@ const createEventTemplate = (tripEvent, offersByType) => {
     </li>`);
 };
 
-export default class EventView {
+export default class EventView extends AbstractView{
   #tripEvent;
   #offersByType;
-  #element;
 
   constructor(tripEvent, offersByType) {
+    super();
     this.#tripEvent = tripEvent;
     this.#offersByType = offersByType;
     this.pointMode = pointMode.DEFAULT;
-    this.#element = null;
   }
 
   get template() {
     return createEventTemplate(this.#tripEvent, this.#offersByType);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
+  setFormOpenClickHandler(callback) {
+    this._callback.formOpenClick = callback;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormOpenClick);
   }
 
-  removeElement() {
-    this.#element = null;
+  #onFormOpenClick = (evt) => {
+    evt.preventDefault();
+
+    this._callback.formOpenClick();
   }
 }

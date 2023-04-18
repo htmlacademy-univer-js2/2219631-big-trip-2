@@ -3,7 +3,7 @@ import TripPresenter from './presenter/trip-presenter.js';
 import TripEventsModel from './model/events-model.js';
 import OfferByTypeModel from './model/offer-model.js';
 import TripEventDestinationModel from './model/destination-model.js';
-import { getRandomInteger } from './utils.js';
+import { getRandomInteger } from './utils/common.js';
 
 const eventCount = 20;
 

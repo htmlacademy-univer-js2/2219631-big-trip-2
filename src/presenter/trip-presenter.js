@@ -4,8 +4,8 @@ import EventEditView from '../view/event-edit-view';
 import SortView from '../view/sort-view';
 import EventOffersView from '../view/event-offers-view';
 import EventDestinationView from '../view/event-destination-view';
-import { render } from '../render';
-import { pointMode, filters } from '../utils';
+import { render, replace } from '../framework/render';
+import { pointMode, filters } from '../utils/common';
 import NoEventView from '../view/event-empty';
 
 
@@ -44,15 +44,11 @@ export default class TripPresenter{
     render(offers, eventDetails);
     render(destination, eventDetails);
 
-    const replaceEventListChildren = (newChild, oldChild) => {
-      this.#tripEventsList.element.replaceChild(newChild, oldChild);
-    };
-
     const onEscapeKeyDown = (evt) => {
       if(evt.key === 'Escape' || evt.key === 'Esc'){
         evt.preventDefault();
         if (newEvent.pointMode === pointMode.EDITING){
-          replaceEventListChildren(newEvent.element, eventEdit.element);
+          replace(newEvent, eventEdit);
         }
         newEvent.pointMode = pointMode.DEFAULT;
         document.removeEventListener('keydown', onEscapeKeyDown);
@@ -63,7 +59,7 @@ export default class TripPresenter{
       for (const [point, eventForm] of this.#eventForm){
         if(point.pointMode === pointMode.EDITING){
           point.pointMode = pointMode.DEFAULT;
-          replaceEventListChildren(point.element, eventForm.element);
+          replace(point, eventForm);
         }
       }
     };
@@ -71,26 +67,21 @@ export default class TripPresenter{
     const onFormOpenButtonClick = () => {
       closeAllForms();
       newEvent.pointMode = pointMode.EDITING;
-      replaceEventListChildren(eventEdit.element, newEvent.element);
+      replace(eventEdit, newEvent);
       document.addEventListener('keydown', onEscapeKeyDown);
     };
 
     const onFormCloseButtonClick = () => {
       if (newEvent.pointMode === pointMode.EDITING){
-        replaceEventListChildren(newEvent.element, eventEdit.element);
+        replace(newEvent, eventEdit);
       }
       newEvent.pointMode = pointMode.DEFAULT;
       document.removeEventListener('keydown', onEscapeKeyDown);
     };
 
-    const onEditFormSubmit = (evt) => {
-      evt.preventDefault();
-      onFormCloseButtonClick();
-    };
-
-    newEvent.element.querySelector('.event__rollup-btn').addEventListener('click', onFormOpenButtonClick);
-    eventEdit.element.addEventListener('submit', onEditFormSubmit);
-    eventEdit.element.querySelector('.event__rollup-btn').addEventListener('click', onFormCloseButtonClick);
+    newEvent.setFormOpenClickHandler(onFormOpenButtonClick);
+    eventEdit.setFormSubmitHandler(onFormCloseButtonClick);
+    eventEdit.setFormCloseClickHandler(onFormCloseButtonClick);
     this.#eventForm.set(newEvent, eventEdit);
     render(newEvent, this.#tripEventsList.element);
   }
