@@ -1,4 +1,4 @@
-import { getRandomInteger, shuffle} from '../utils.js';
+import { getRandomInteger, shuffle } from '../utils/common.js';
 
 const DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',

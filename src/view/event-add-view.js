@@ -1,7 +1,6 @@
-import {createElement} from '../render.js';
-import {humanizeEventTime} from '../event-date.js';
-import { uppperFirstSymbol } from '../utils.js';
-
+import AbstractView from '../framework/view/abstract-view.js';
+import { uppperFirstSymbol } from '../utils/common.js';
+import { humanizeEventTime } from '../utils/event-date.js';
 
 const createEventAddTemplate = (tripEvent) => {
   const {dateFrom, dateTo, destination, type} = tripEvent;
@@ -91,12 +90,11 @@ const createEventAddTemplate = (tripEvent) => {
     </li>`
   );
 };
-export default class EventAddView {
+export default class EventAddView extends AbstractView {
   #tripEvent;
-  #element;
   constructor (tripEvent) {
+    super();
     this.#tripEvent = tripEvent;
-    this.#element = null;
   }
 
   get tripEvent() {
@@ -105,16 +103,5 @@ export default class EventAddView {
 
   get template() {
     return createEventAddTemplate(this.#tripEvent);
-  }
-
-  get element() {
-    if (!this.#element){
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

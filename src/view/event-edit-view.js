@@ -1,6 +1,6 @@
-import {createElement} from '../render.js';
-import { humanizeEventTime } from '../event-date.js';
-import { uppperFirstSymbol } from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import { humanizeEventTime } from '../utils/event-date.js';
+import { uppperFirstSymbol } from '../utils/common.js';
 
 
 const createEventEditTemplate = (tripEvent) => {
@@ -94,12 +94,11 @@ const createEventEditTemplate = (tripEvent) => {
     </li>`
   );
 };
-export default class EventEditView {
+export default class EventEditView extends AbstractView {
   #tripEvent;
-  #element;
   constructor (tripEvent) {
+    super();
     this.#tripEvent = tripEvent;
-    this.#element = null;
   }
 
   get tripEvent() {
@@ -111,14 +110,27 @@ export default class EventEditView {
     return createEventEditTemplate(this.#tripEvent);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+
+    this.element.querySelector('form').addEventListener('submit', this.#onFormSubmit);
   }
 
-  removeElement() {
-    this.#element = null;
+  setFormCloseClickHandler(callback) {
+    this._callback.formCloseClick = callback;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormCloseClick);
+  }
+
+  #onFormSubmit = (evt) => {
+    evt.preventDefault();
+
+    this._callback.formSubmit();
+  }
+
+  #onFormCloseClick = (evt) => {
+    evt.preventDefault();
+
+    this._callback.formCloseClick();
   }
 }

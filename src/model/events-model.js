@@ -1,5 +1,5 @@
-import { type, getRandomInteger } from '../utils';
-import { generateDate } from '../event-date';
+import { type, getRandomInteger } from '../utils/common';
+import { generateDate } from '../utils/event-date';
 import { generateTripEvent } from '../mock/event';
 
 export default class TripEventsModel{
