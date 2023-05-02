@@ -20,10 +20,40 @@ const transformTimeDifference = (difference) => {
   return humanizeEventTime(dayjs().date(difference), 'DD[D] HH[H] mm[M]');
 };
 
-const getTimeDifference = (dateFrom, dateTo) => transformTimeDifference(dayjs(dateTo).diff(dayjs(dateFrom), 'minute'));
+const getTimeDifference = (dateFrom, dateTo, unit) => transformTimeDifference(dayjs(dateTo).diff(dayjs(dateFrom), unit));
 
-const generateDate = () => dayjs().add(getRandomInteger(0, eventTimeGap), 'hour').toString();
+const generateDate = () => getRandomInteger(0, 1)
+  ? dayjs().add(getRandomInteger(0, eventTimeGap), 'hour').toString()
+  : dayjs().subtract(getRandomInteger(0, eventTimeGap), 'hour').toString();
 
 const generateDateTo = (dateFrom) => dayjs(dateFrom).add(getRandomInteger(minEventDuration, maxEventDuration), 'hour').toString();
 
-export {humanizeEventTime, getTimeDifference, generateDate, generateDateTo};
+const isPast = (date, unit) => dayjs().isAfter(dayjs(date), unit);
+
+const isFuture = (date, unit) => dayjs().isBefore(dayjs(date), unit) || dayjs().isSame(dayjs(date), unit);
+
+const getEarliestEvent = (tripEvents) => {
+  let earliestEvent = tripEvents[0];
+  for(let i = 1; i < tripEvents.length; i++) {
+    if(dayjs(tripEvents[i].dateFrom).diff(dayjs(earliestEvent.dateFrom), 'M') < 0
+      || dayjs(tripEvents[i].dateFrom).diff(dayjs(earliestEvent.dateFrom), 'M') === 0
+      && dayjs(tripEvents[i].dateFrom).diff(dayjs(earliestEvent.dateFrom), 'D') < 0) {
+      earliestEvent = tripEvents[i];
+    }
+  }
+  return earliestEvent;
+};
+
+const getLatestEvent = (tripEvents) => {
+  let latestEvent = tripEvents[0];
+  for(let i = 1; i < tripEvents.length; i++) {
+    if(dayjs(tripEvents[i].dateTo).diff(dayjs(latestEvent.dateTo), 'M') > 0
+      || dayjs(tripEvents[i].dateTo).diff(dayjs(latestEvent.dateTo), 'M') === 0
+      && dayjs(tripEvents[i].dateTo).diff(dayjs(latestEvent.dateTo), 'D') > 0) {
+      latestEvent = tripEvents[i];
+    }
+  }
+  return latestEvent;
+};
+
+export {humanizeEventTime, getTimeDifference, generateDate, generateDateTo, isPast, isFuture, getEarliestEvent, getLatestEvent};

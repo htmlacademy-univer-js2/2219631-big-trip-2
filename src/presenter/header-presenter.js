@@ -5,19 +5,21 @@ import { render, RenderPosition } from '../framework/render';
 
 export default class HeaderPresenter{
   #headerContainer;
-  #tripInfo;
+  #events;
   #menu;
   #filter;
 
-  constructor(headerContainer){
+  constructor(headerContainer, filters, events){
     this.#headerContainer = headerContainer;
-    this.#tripInfo = new TripInfoView();
+    this.#events = events;
     this.#menu = new MenuView();
-    this.#filter = new FilterView();
+    this.#filter = new FilterView(filters);
   }
 
   init(){
-    render(this.#tripInfo, this.#headerContainer, RenderPosition.AFTERBEGIN);
+    if (this.#events.length !== 0) {
+      render(new TripInfoView(this.#events), this.#headerContainer, RenderPosition.AFTERBEGIN);
+    }
     render(this.#menu, this.#headerContainer.querySelector('.trip-controls__navigation'));
     render(this.#filter, this.#headerContainer.querySelector('.trip-controls__filters'));
   }
