@@ -5,8 +5,9 @@ import SortView from '../view/sort-view';
 import EventOffersView from '../view/event-offers-view';
 import EventDestinationView from '../view/event-destination-view';
 import { render, replace } from '../framework/render';
-import { pointMode, filters } from '../utils/common';
+import { pointMode } from '../utils/common';
 import NoEventView from '../view/event-empty';
+import { filters } from '../utils/filter';
 
 
 export default class TripPresenter{

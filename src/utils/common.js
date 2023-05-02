@@ -26,10 +26,5 @@ const pointMode = {
   EDITING: 'editing',
 };
 
-const filters = {
-  EVERYTHING: 'everything',
-  FUTURE: 'future',
-  PAST: 'past',
-};
 
-export {getRandomInteger, shuffle, uppperFirstSymbol, type, pointMode, filters};
+export {getRandomInteger, shuffle, uppperFirstSymbol, type, pointMode};
