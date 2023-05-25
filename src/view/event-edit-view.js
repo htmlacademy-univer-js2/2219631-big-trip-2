@@ -96,9 +96,9 @@ const createEventEditTemplate = (tripEvent) => {
 };
 export default class EventEditView extends AbstractView {
   #tripEvent;
-  constructor (tripEvent) {
+  constructor (event) {
     super();
-    this.#tripEvent = tripEvent;
+    this.#tripEvent = event;
   }
 
   get tripEvent() {
@@ -110,27 +110,27 @@ export default class EventEditView extends AbstractView {
     return createEventEditTemplate(this.#tripEvent);
   }
 
+  get detailsComponent() {
+    return this.element.querySelector('.event__details');
+  }
+
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
-
     this.element.querySelector('form').addEventListener('submit', this.#onFormSubmit);
   }
 
   setFormCloseClickHandler(callback) {
     this._callback.formCloseClick = callback;
-
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormCloseClick);
   }
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-
-    this._callback.formSubmit();
+    this._callback.formSubmit(this.#tripEvent);
   }
 
   #onFormCloseClick = (evt) => {
     evt.preventDefault();
-
     this._callback.formCloseClick();
   }
 }
