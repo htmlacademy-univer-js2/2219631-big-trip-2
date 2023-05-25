@@ -73,13 +73,21 @@ export default class EventView extends AbstractView{
 
   setFormOpenClickHandler(callback) {
     this._callback.formOpenClick = callback;
-
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormOpenClick);
+  }
+
+  setFavoriteButtonHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#onFavoriteButtonClick);
   }
 
   #onFormOpenClick = (evt) => {
     evt.preventDefault();
-
     this._callback.formOpenClick();
-  }
+  };
+
+  #onFavoriteButtonClick = (evt) => {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  };
 }
