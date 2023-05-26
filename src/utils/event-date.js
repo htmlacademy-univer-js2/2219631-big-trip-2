@@ -11,16 +11,17 @@ const maxHours = 24;
 const humanizeEventTime = (dateTime, format) => dayjs(dateTime).format(format).toUpperCase();
 
 const transformTimeDifference = (difference) => {
+  let format = 'DD[D] HH[H] mm[M]';
   if(difference < maxMinutes){
-    return humanizeEventTime(dayjs().minute(difference), 'mm[M]');
+    format = 'mm[M]';
   }
   else if (difference / maxMinutes < maxHours) {
-    return humanizeEventTime(dayjs().hour(difference), 'HH[H] mm[M]');
+    format = 'HH[H] mm[M]';
   }
-  return humanizeEventTime(dayjs().date(difference), 'DD[D] HH[H] mm[M]');
+  return humanizeEventTime(dayjs().date(difference/(maxMinutes*maxHours)).hour((difference/maxMinutes)%maxHours).minute(difference%maxMinutes), format);
 };
 
-const getTimeDifference = (dateFrom, dateTo, unit) => transformTimeDifference(dayjs(dateTo).diff(dayjs(dateFrom), unit));
+const getTimeDifference = (dateFrom, dateTo) => transformTimeDifference(dayjs(dateTo).diff(dayjs(dateFrom), 'minute'));
 
 const generateDate = () => getRandomInteger(0, 1)
   ? dayjs().add(getRandomInteger(0, eventTimeGap), 'hour').toString()
@@ -56,4 +57,11 @@ const getLatestEvent = (tripEvents) => {
   return latestEvent;
 };
 
-export {humanizeEventTime, getTimeDifference, generateDate, generateDateTo, isPast, isFuture, getEarliestEvent, getLatestEvent};
+const sortByDate = (currentEvent, nextEvent) => {
+  const dateFromDifference = dayjs(currentEvent.dateFrom).diff(dayjs(nextEvent.dateFrom));
+  return dateFromDifference === 0 ? dayjs(nextEvent.dateTo).diff(dayjs(currentEvent.dateTo)) : dateFromDifference;
+};
+
+const sortByDuration = (currentEvent, nextEvent) => dayjs(nextEvent.dateTo).diff(dayjs(nextEvent.dateFrom)) - dayjs(currentEvent.dateTo).diff(dayjs(currentEvent.dateFrom));
+
+export {humanizeEventTime, getTimeDifference, generateDate, generateDateTo, isPast, isFuture, getEarliestEvent, getLatestEvent, sortByDate, sortByDuration};
