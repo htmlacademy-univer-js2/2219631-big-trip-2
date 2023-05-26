@@ -5,6 +5,7 @@ import NoEventView from '../view/event-empty';
 import { filters } from '../utils/filter';
 import EventPresenter from './event-presenter';
 import { updateItem } from '../utils/common';
+import { SortType, sortEventsByType } from '../utils/common';
 
 
 export default class EventBoardPresenter{
@@ -16,6 +17,9 @@ export default class EventBoardPresenter{
   #tripEventsList;
   #filterType;
   #tripEventsPresenters;
+  #sortComponent = new SortView();
+  #currentSortType = SortType.DAY;
+  #sourcedBoardEvents; 
 
   constructor(tripEventsComponent, tripEventsModel, offersModel) {
     this.#tripEventsModel = tripEventsModel;
@@ -30,6 +34,7 @@ export default class EventBoardPresenter{
     this.#tripEventsPresenters = new Map();
 
     this.#filterType = filters.EVERYTHING;
+    this.#sourcedBoardEvents = [...this.#tripEventsModel.tripEvents];
   }
 
   init() {
@@ -50,13 +55,25 @@ export default class EventBoardPresenter{
     render(new NoEventView(this.#filterType), this.#tripEventsComponent);
   }
 
+  #handleSortTypeChange = (sortType) => {
+    if(sortType === this.#currentSortType) {
+      return;
+    }
+    sortEventsByType[sortType](this.#tripEvents);
+    this.#currentSortType = sortType;
+    this.#clearEventsList();
+    this.#renderTripEvents();
+  };
+
   #renderSort() {
-    render(new SortView(), this.#tripEventsComponent);
+    //render(new SortView(), this.#tripEventsComponent);
+    render(this.#sortComponent, this.#tripEventsComponent);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
 
   #renderTripEventsList() {
     render(this.#tripEventsList, this.#tripEventsComponent);
-
+    sortEventsByType[this.#currentSortType](this.#tripEvents);
     this.#renderTripEvents();
   }
 
@@ -68,6 +85,7 @@ export default class EventBoardPresenter{
 
   #onTripEventChange = (updatedItem) => {
     this.#tripEvents = updateItem(this.#tripEvents, updatedItem);
+    this.#sourcedBoardEvents = updateItem(this.#sourcedBoardEvents, updatedItem);
     this.#tripEventsPresenters.get(updatedItem.id).init(updatedItem);
   };
 
@@ -80,4 +98,8 @@ export default class EventBoardPresenter{
     tripEventPresenter.init(tripEvent);
     this.#tripEventsPresenters.set(tripEvent.id, tripEventPresenter);
   }
+  #clearEventsList = () => {
+    this.#tripEventsPresenters.forEach((e)=>e.destroy());
+    this.#tripEventsPresenters.clear();
+  };
 }
