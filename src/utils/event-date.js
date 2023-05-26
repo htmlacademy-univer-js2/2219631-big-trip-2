@@ -18,7 +18,7 @@ const transformTimeDifference = (difference) => {
   else if (difference / maxMinutes < maxHours) {
     format = 'HH[H] mm[M]';
   }
-  return humanizeEventTime(dayjs().date(difference/(maxMinutes*maxHours)).hour((difference/maxMinutes)%maxHours).minute(difference%maxMinutes), format)
+  return humanizeEventTime(dayjs().date(difference/(maxMinutes*maxHours)).hour((difference/maxMinutes)%maxHours).minute(difference%maxMinutes), format);
 };
 
 const getTimeDifference = (dateFrom, dateTo) => transformTimeDifference(dayjs(dateTo).diff(dayjs(dateFrom), 'minute'));

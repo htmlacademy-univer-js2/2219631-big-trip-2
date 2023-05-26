@@ -1,4 +1,4 @@
-import { sortByDate, sortByDuration } from "./event-date";
+import { sortByDate, sortByDuration } from './event-date';
 const getRandomInteger = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -51,5 +51,5 @@ const sortEventsByType = {
   [sortType.DAY]: (events) => events.sort(sortByDate),
   [sortType.TIME]: (events) => events.sort(sortByDuration),
   [sortType.PRICE]: (events) => events.sort((currPrice, nextPrice)=>nextPrice.basePrice - currPrice.basePrice),
-}
+};
 export {getRandomInteger, shuffle, uppperFirstSymbol, type, pointMode, updateItem, sortType as SortType, sortEventsByType};

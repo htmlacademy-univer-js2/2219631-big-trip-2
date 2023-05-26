@@ -19,7 +19,7 @@ export default class EventBoardPresenter{
   #tripEventsPresenters;
   #sortComponent = new SortView();
   #currentSortType = SortType.DAY;
-  #sourcedBoardEvents; 
+  #sourcedBoardEvents;
 
   constructor(tripEventsComponent, tripEventsModel, offersModel) {
     this.#tripEventsModel = tripEventsModel;
@@ -98,6 +98,7 @@ export default class EventBoardPresenter{
     tripEventPresenter.init(tripEvent);
     this.#tripEventsPresenters.set(tripEvent.id, tripEventPresenter);
   }
+
   #clearEventsList = () => {
     this.#tripEventsPresenters.forEach((e)=>e.destroy());
     this.#tripEventsPresenters.clear();
