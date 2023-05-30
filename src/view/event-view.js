@@ -57,18 +57,18 @@ const createEventTemplate = (tripEvent, offersByType) => {
 };
 
 export default class EventView extends AbstractView{
-  #tripEvent;
+  #event;
   #offersByType;
 
-  constructor(tripEvent, offersByType) {
+  constructor(event, offersByType) {
     super();
-    this.#tripEvent = tripEvent;
+    this.#event = event;
     this.#offersByType = offersByType;
     this.pointMode = pointMode.DEFAULT;
   }
 
   get template() {
-    return createEventTemplate(this.#tripEvent, this.#offersByType);
+    return createEventTemplate(this.#event, this.#offersByType);
   }
 
   setFormOpenClickHandler(callback) {

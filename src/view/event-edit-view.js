@@ -10,14 +10,14 @@ const destinationMaxPhotoIndex = 100;
 const destinationMaxPhotoCount = 5;
 
 
-const createEventDestinationTemplate = (tripEvent) => {
-  if(tripEvent.destination.description.length || tripEvent.destination.pictures.length) {
-    const pictures = tripEvent.destination.pictures.map((picture) =>
+const createEventDestinationTemplate = (event) => {
+  if(event.destination.description.length || event.destination.pictures.length) {
+    const pictures = event.destination.pictures.map((picture) =>
       `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('');
     return(
       `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">${tripEvent.destination.description}</p>
+    <p class="event__destination-description">${event.destination.description}</p>
     <div class="event__photos-container">
       <div class="event__photos-tape">
         ${pictures}
@@ -29,8 +29,8 @@ const createEventDestinationTemplate = (tripEvent) => {
   return '<section class="event__section  event__section--destination"></section>';
 };
 
-const createEventOffersTemplate = (tripEvent, offersByType) => {
-  const {offers} = tripEvent;
+const createEventOffersTemplate = (event, offersByType) => {
+  const {offers} = event;
 
   if(offersByType.length) {
     const eventOffersByType = offersByType.map((offer) => {
@@ -71,8 +71,8 @@ const createEventType = (currentType) => (
                 </div>`);
   }).join('')
 );
-const createEventEditTemplate = (tripEvent, offersByType) => {
-  const {basePrice, dateFrom, dateTo, destination, type} = tripEvent;
+const createEventEditTemplate = (event, offersByType) => {
+  const {basePrice, dateFrom, dateTo, destination, type} = event;
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -120,8 +120,8 @@ const createEventEditTemplate = (tripEvent, offersByType) => {
           </button>
         </header>
         <section class="event__details">
-        ${createEventOffersTemplate(tripEvent, offersByType)}
-        ${createEventDestinationTemplate(tripEvent)}
+        ${createEventOffersTemplate(event, offersByType)}
+        ${createEventDestinationTemplate(event)}
         </section>
       </form>
     </li>`
@@ -185,17 +185,17 @@ export default class EventEditView extends AbstractStatefulView {
     this.#offersByCurrentType = this.#offersByType.length ? this.#offersByType.find((offer) => offer.type === newType).offers : [];
   }
 
-  #onEventTypeClick = (event) => {
-    if(event.target.tagName !== 'INPUT') {
+  #onEventTypeClick = (evt) => {
+    if(evt.target.tagName !== 'INPUT') {
       return;
     }
 
-    event.preventDefault();
+    evt.preventDefault();
 
-    this.#updateOffersByCurrentType(event.target.value);
+    this.#updateOffersByCurrentType(evt.target.value);
 
     this.updateElement({
-      type: event.target.value,
+      type: evt.target.value,
       offers: this.#offersByCurrentType.length ? shuffle(Array.from(this.#offersByCurrentType, (offer) => offer.id)).slice(0, getRandomInteger(1, this.#offersByCurrentType.length)) : [],
     });
   };
