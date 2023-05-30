@@ -75,25 +75,10 @@ export default class EventPresenter{
     }
 
     #renderEditFormComponent() {
-      this.#editFormComponent = new EventEditView(this.#tripEvent);
-
-      this.#renderOffersComponent();
-      this.#renderDestinationComponent();
+      this.#editFormComponent = new EventEditView(this.#tripEvent, this.#offersByType);
 
       this.#editFormComponent.setFormSubmitHandler(this.#onFormSubmit);
       this.#editFormComponent.setFormCloseClickHandler(this.#onFormCloseButtonClick);
-    }
-
-    #renderOffersComponent() {
-      this.#offersComponent = new EventOffersView(this.#editFormComponent.tripEvent, this.#offersByType);
-
-      render(this.#offersComponent, this.#editFormComponent.detailsComponent);
-    }
-
-    #renderDestinationComponent() {
-      this.#destinationComponent = new EventDestinationView(this.#editFormComponent.tripEvent);
-
-      render(this.#destinationComponent, this.#editFormComponent.detailsComponent);
     }
 
     #replacePointToForm() {
@@ -106,6 +91,7 @@ export default class EventPresenter{
     }
 
     #replaceFormToPoint() {
+      this.#editFormComponent.reset(this.#tripEvent);
       replace(this.#eventComponent, this.#editFormComponent);
 
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
@@ -129,7 +115,7 @@ export default class EventPresenter{
     #onEscapeKeyDown = (evt) => {
       if(evt.key === 'Escape' || evt.key === 'Esc') {
         evt.preventDefault();
-
+        this.#editFormComponent.reset(this.#tripEvent);
         this.#replaceFormToPoint();
       }
     };
