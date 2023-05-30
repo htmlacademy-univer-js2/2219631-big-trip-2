@@ -1,9 +1,9 @@
 import { filter } from '../utils/filter';
 
-const generateFilters = (tripEvents) => Object.entries(filter).map(
+const generateFilters = (events) => Object.entries(filter).map(
   ([filterType, filterEvents]) => ({
     type: filterType,
-    count: filterEvents(tripEvents).length,
+    count: filterEvents(events).length,
   }));
 
 export {generateFilters};
