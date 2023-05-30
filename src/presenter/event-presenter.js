@@ -1,7 +1,5 @@
 import EventView from '../view/event-view';
 import EventEditView from '../view/event-edit-view';
-import EventOffersView from '../view/event-offers-view';
-import EventDestinationView from '../view/event-destination-view';
 import { render, replace, remove } from '../framework/render';
 import { pointMode } from '../utils/common';
 
@@ -9,10 +7,8 @@ export default class EventPresenter{
     #eventComponent;
     #editFormComponent;
     #eventsListContainer;
-    #tripEvent;
+    #event;
     #offersByType;
-    #offersComponent;
-    #destinationComponent;
     #changeData;
     #changePointMode;
     #pointMode;
@@ -31,7 +27,7 @@ export default class EventPresenter{
     }
 
     init(event) {
-      this.#tripEvent = event;
+      this.#event = event;
       this.#renderEventComponent();
     }
 
@@ -50,7 +46,7 @@ export default class EventPresenter{
       const previousEventComponent = this.#eventComponent;
       const previousEditFormComponent = this.#editFormComponent;
 
-      this.#eventComponent = new EventView(this.#tripEvent, this.#offersByType);
+      this.#eventComponent = new EventView(this.#event, this.#offersByType);
 
       this.#renderEditFormComponent();
 
@@ -75,25 +71,10 @@ export default class EventPresenter{
     }
 
     #renderEditFormComponent() {
-      this.#editFormComponent = new EventEditView(this.#tripEvent);
-
-      this.#renderOffersComponent();
-      this.#renderDestinationComponent();
+      this.#editFormComponent = new EventEditView(this.#event, this.#offersByType);
 
       this.#editFormComponent.setFormSubmitHandler(this.#onFormSubmit);
       this.#editFormComponent.setFormCloseClickHandler(this.#onFormCloseButtonClick);
-    }
-
-    #renderOffersComponent() {
-      this.#offersComponent = new EventOffersView(this.#editFormComponent.tripEvent, this.#offersByType);
-
-      render(this.#offersComponent, this.#editFormComponent.detailsComponent);
-    }
-
-    #renderDestinationComponent() {
-      this.#destinationComponent = new EventDestinationView(this.#editFormComponent.tripEvent);
-
-      render(this.#destinationComponent, this.#editFormComponent.detailsComponent);
     }
 
     #replacePointToForm() {
@@ -106,6 +87,7 @@ export default class EventPresenter{
     }
 
     #replaceFormToPoint() {
+      this.#editFormComponent.reset(this.#event);
       replace(this.#eventComponent, this.#editFormComponent);
 
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
@@ -129,12 +111,12 @@ export default class EventPresenter{
     #onEscapeKeyDown = (evt) => {
       if(evt.key === 'Escape' || evt.key === 'Esc') {
         evt.preventDefault();
-
+        this.#editFormComponent.reset(this.#event);
         this.#replaceFormToPoint();
       }
     };
 
     #onFavoriteChangeClick = () => {
-      this.#changeData({...this.#tripEvent, isFavorite: !this.#tripEvent.isFavorite});
+      this.#changeData({...this.#event, isFavorite: !this.#event.isFavorite});
     };
 }

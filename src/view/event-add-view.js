@@ -91,17 +91,17 @@ const createEventAddTemplate = (tripEvent) => {
   );
 };
 export default class EventAddView extends AbstractView {
-  #tripEvent;
-  constructor (tripEvent) {
+  #event;
+  constructor (event) {
     super();
-    this.#tripEvent = tripEvent;
+    this.#event = event;
   }
 
   get tripEvent() {
-    return this.#tripEvent;
+    return this.#event;
   }
 
   get template() {
-    return createEventAddTemplate(this.#tripEvent);
+    return createEventAddTemplate(this.#event);
   }
 }

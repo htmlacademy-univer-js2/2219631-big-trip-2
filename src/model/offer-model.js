@@ -1,5 +1,5 @@
 import { generateOffersByType, generateOffer } from '../mock/offer.js';
-import { type, shuffle, getRandomInteger } from '../utils/common.js';
+import { types, shuffle, getRandomInteger } from '../utils/common.js';
 
 const MAX_EMPTINESS_VARIETY = 5;
 
@@ -18,8 +18,8 @@ export default class OfferByTypeModel{
   #offersByType;
   constructor(){
     this.#offers = Array.from(OFFERS_TITLES, (title, id) => generateOffer(id, title));
-    this.#offersByType = getRandomInteger(0, MAX_EMPTINESS_VARIETY) ? Array.from(type,
-      (types) => generateOffersByType(types, shuffle(this.offers).slice(0, getRandomInteger(1, this.offers.length)))) : [];
+    this.#offersByType = getRandomInteger(0, MAX_EMPTINESS_VARIETY) ? Array.from(types,
+      (offerTypes) => generateOffersByType(offerTypes, shuffle(this.offers).slice(0, getRandomInteger(1, this.offers.length)))) : [];
   }
 
   get offersByType() {

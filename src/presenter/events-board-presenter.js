@@ -9,32 +9,32 @@ import { SortType, sortEventsByType } from '../utils/common';
 
 
 export default class EventBoardPresenter{
-  #tripEventsModel;
-  #tripEvents;
+  #eventsModel;
+  #events;
   #offersModel;
   #offersByType;
-  #tripEventsComponent;
-  #tripEventsList;
+  #eventsComponent;
+  #eventsList;
   #filterType;
-  #tripEventsPresenters;
+  #eventPresenter;
   #sortComponent = new SortView();
   #currentSortType = SortType.DAY;
   #sourcedBoardEvents;
 
-  constructor(tripEventsComponent, tripEventsModel, offersModel) {
-    this.#tripEventsModel = tripEventsModel;
-    this.#tripEvents = [...this.#tripEventsModel.tripEvents];
+  constructor(eventsComponent, eventsModel, offersModel) {
+    this.#eventsModel = eventsModel;
+    this.#events = [...this.#eventsModel.tripEvents];
 
     this.#offersModel = offersModel;
     this.#offersByType = [...this.#offersModel.offersByType];
 
-    this.#tripEventsComponent = tripEventsComponent;
-    this.#tripEventsList = new EventListView();
+    this.#eventsComponent = eventsComponent;
+    this.#eventsList = new EventListView();
 
-    this.#tripEventsPresenters = new Map();
+    this.#eventPresenter = new Map();
 
     this.#filterType = filters.EVERYTHING;
-    this.#sourcedBoardEvents = [...this.#tripEventsModel.tripEvents];
+    this.#sourcedBoardEvents = [...this.#eventsModel.tripEvents];
   }
 
   init() {
@@ -42,65 +42,65 @@ export default class EventBoardPresenter{
   }
 
   #renderBoard() {
-    if(this.#tripEvents.length === 0){
+    if(this.#events.length === 0){
       this.#renderNoEventsMessage();
       return;
     }
 
     this.#renderSort();
-    this.#renderTripEventsList();
+    this.#renderEventsList();
   }
 
   #renderNoEventsMessage() {
-    render(new NoEventView(this.#filterType), this.#tripEventsComponent);
+    render(new NoEventView(this.#filterType), this.#eventsComponent);
   }
 
   #handleSortTypeChange = (sortType) => {
     if(sortType === this.#currentSortType) {
       return;
     }
-    sortEventsByType[sortType](this.#tripEvents);
+    sortEventsByType[sortType](this.#events);
     this.#currentSortType = sortType;
     this.#clearEventsList();
-    this.#renderTripEvents();
+    this.#renderEvents();
   };
 
   #renderSort() {
     //render(new SortView(), this.#tripEventsComponent);
-    render(this.#sortComponent, this.#tripEventsComponent);
+    render(this.#sortComponent, this.#eventsComponent);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
 
-  #renderTripEventsList() {
-    render(this.#tripEventsList, this.#tripEventsComponent);
-    sortEventsByType[this.#currentSortType](this.#tripEvents);
-    this.#renderTripEvents();
+  #renderEventsList() {
+    render(this.#eventsList, this.#eventsComponent);
+    sortEventsByType[this.#currentSortType](this.#events);
+    this.#renderEvents();
   }
 
-  #renderTripEvents() {
-    for(let i = 0; i < this.#tripEvents.length; i++) {
-      this.#renderTripEvent(this.#tripEvents[i]);
+  #renderEvents() {
+    for(let i = 0; i < this.#events.length; i++) {
+      this.#renderEvent(this.#events[i]);
     }
   }
 
-  #onTripEventChange = (updatedItem) => {
-    this.#tripEvents = updateItem(this.#tripEvents, updatedItem);
+  #onEventChange = (updatedItem) => {
+    this.#events = updateItem(this.#events, updatedItem);
     this.#sourcedBoardEvents = updateItem(this.#sourcedBoardEvents, updatedItem);
-    this.#tripEventsPresenters.get(updatedItem.id).init(updatedItem);
+    this.#eventPresenter.get(updatedItem.id).init(updatedItem);
   };
 
-  #onTripEventModeChange = () => {
-    this.#tripEventsPresenters.forEach((tripEvent) => tripEvent.resetTripEventMode());
+  #onEventModeChange = () => {
+    this.#eventPresenter.forEach((tripEvent) => tripEvent.resetTripEventMode());
   };
 
-  #renderTripEvent(tripEvent) {
-    const tripEventPresenter = new EventPresenter(this.#tripEventsList.element, this.#offersByType, this.#onTripEventChange, this.#onTripEventModeChange);
-    tripEventPresenter.init(tripEvent);
-    this.#tripEventsPresenters.set(tripEvent.id, tripEventPresenter);
+  #renderEvent(event) {
+    const eventPresenter = new EventPresenter(this.#eventsList.element, this.#offersByType, this.#onEventChange, this.#onEventModeChange);
+    eventPresenter.init(event);
+    this.#eventPresenter.set(event.id, eventPresenter);
   }
 
   #clearEventsList = () => {
-    this.#tripEventsPresenters.forEach((e)=>e.destroy());
-    this.#tripEventsPresenters.clear();
+    this.#eventPresenter.forEach((e)=>e.destroy());
+    this.#eventPresenter.clear();
   };
 }

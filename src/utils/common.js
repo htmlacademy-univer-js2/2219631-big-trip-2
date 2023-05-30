@@ -52,4 +52,4 @@ const sortEventsByType = {
   [sortType.TIME]: (events) => events.sort(sortByDuration),
   [sortType.PRICE]: (events) => events.sort((currPrice, nextPrice)=>nextPrice.basePrice - currPrice.basePrice),
 };
-export {getRandomInteger, shuffle, uppperFirstSymbol, type, pointMode, updateItem, sortType as SortType, sortEventsByType};
+export {getRandomInteger, shuffle, uppperFirstSymbol, type as types, pointMode, updateItem, sortType as SortType, sortEventsByType};
