@@ -1,8 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeEventTime, getTimeDifference } from '../utils/event-date.js';
-import { uppperFirstSymbol } from '../utils/common.js';
 import { PointMode } from '../const.js';
-import he from 'he'
+import he from 'he';
 
 
 const createEventTemplate = (tripEvent, offersByType) => {

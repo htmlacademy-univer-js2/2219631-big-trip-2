@@ -5,7 +5,7 @@ import { DESTINATION_DESCRIPTIONS, DESTINATION_PLACES, TYPES } from '../const.js
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
-import he from 'he'
+import he from 'he';
 
 
 const destinationMaxSentences = 5;
