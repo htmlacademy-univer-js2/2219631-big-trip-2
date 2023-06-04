@@ -5,6 +5,7 @@ import { DESTINATION_DESCRIPTIONS, DESTINATION_PLACES, TYPES } from '../const.js
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
+import he from 'he'
 
 
 const destinationMaxSentences = 5;
@@ -103,7 +104,7 @@ const createEventEditTemplate = (event, offersByType, isNewEvent) => {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${uppperFirstSymbol(type)}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination.name)}" list="destination-list-1">
             <datalist id="destination-list-1">
             ${Array.from(DESTINATION_PLACES, (place) => `<option value="${place}"></option>`).join('')}
             </datalist>
