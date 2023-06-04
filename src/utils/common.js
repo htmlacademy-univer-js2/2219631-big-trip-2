@@ -27,24 +27,12 @@ const pointMode = {
   EDITING: 'editing',
 };
 
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
 const sortType = {
   DAY: 'day',
+  EVENT: 'event',
   TIME: 'time',
   PRICE: 'price',
+  OFFER: 'offer',
 };
 
 const sortEventsByType = {
@@ -52,4 +40,16 @@ const sortEventsByType = {
   [sortType.TIME]: (events) => events.sort(sortByDuration),
   [sortType.PRICE]: (events) => events.sort((currPrice, nextPrice)=>nextPrice.basePrice - currPrice.basePrice),
 };
-export {getRandomInteger, shuffle, uppperFirstSymbol, type as types, pointMode, updateItem, sortType as SortType, sortEventsByType};
+
+const UserAction = {
+  ADD_TRIP_EVENT: 'ADD_TRIP_EVENT',
+  UPDATE_TRIP_EVENT: 'UPDATE_TRIP_EVENT',
+  DELETE_TRIP_EVENT: 'DELETE_TRIP_EVENT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+export {getRandomInteger, shuffle, uppperFirstSymbol, type as types, pointMode, sortType as SortType, sortEventsByType, UserAction, UpdateType};

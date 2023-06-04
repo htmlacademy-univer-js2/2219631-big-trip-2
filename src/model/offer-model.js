@@ -1,7 +1,6 @@
 import { generateOffersByType, generateOffer } from '../mock/offer.js';
 import { types, shuffle, getRandomInteger } from '../utils/common.js';
-
-const MAX_EMPTINESS_VARIETY = 5;
+import Observable from '../framework/observable.js';
 
 const OFFERS_TITLES = [
   'Add luggage',
@@ -13,13 +12,14 @@ const OFFERS_TITLES = [
   'Add drinks'
 ];
 
-export default class OfferByTypeModel{
+export default class OfferByTypeModel extends Observable{
   #offers;
   #offersByType;
   constructor(){
+    super();
     this.#offers = Array.from(OFFERS_TITLES, (title, id) => generateOffer(id, title));
-    this.#offersByType = getRandomInteger(0, MAX_EMPTINESS_VARIETY) ? Array.from(types,
-      (offerTypes) => generateOffersByType(offerTypes, shuffle(this.offers).slice(0, getRandomInteger(1, this.offers.length)))) : [];
+    this.#offersByType = Array.from(types, (type) => generateOffersByType(type, shuffle(this.offers).
+      slice(0, getRandomInteger(1, this.offers.length))));
   }
 
   get offersByType() {
@@ -28,5 +28,15 @@ export default class OfferByTypeModel{
 
   get offers() {
     return this.#offers;
+  }
+
+  setOffersByType(updateType, offersByType) {
+    this.#offersByType = offersByType;
+    this._notify(updateType, offersByType);
+  }
+
+  setOffers(updateType, offers) {
+    this.#offers = offers;
+    this._notify(updateType, offers);
   }
 }

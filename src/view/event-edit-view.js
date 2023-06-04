@@ -74,8 +74,14 @@ const createEventType = (currentType) => (
                 </div>`);
   }).join('')
 );
-const createEventEditTemplate = (event, offersByType) => {
+const createEventEditTemplate = (event, offersByType, isNewEvent) => {
   const {basePrice, dateFrom, dateTo, destination, type} = event;
+
+  const price = isNewEvent && basePrice === 0 ? '' : basePrice;
+  const rollUpButton = isNewEvent ? '' :
+    `<button class="event__rollup-btn" type="button">
+      <span class="visually-hidden">Open event</span>
+    </button>`;
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -114,13 +120,11 @@ const createEventEditTemplate = (event, offersByType) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
           </div>
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+          <button class="event__reset-btn" type="reset">${isNewEvent ? 'Cancel' : 'Delete'}</button>
+          ${rollUpButton}
         </header>
         <section class="event__details">
         ${createEventOffersTemplate(event, offersByType)}
@@ -136,11 +140,13 @@ export default class EventEditView extends AbstractStatefulView {
   #datepicker = null;
   #offersByType;
   #offersByCurrentType;
-  constructor (event, offersByType) {
+  #isNewEvent;
+  constructor (event, offersByType, isNewEvent = false) {
     super();
     this._state = EventEditView.parseEventToState(event);
     this.#offersByType = offersByType;
     this.#offersByCurrentType = this.#offersByType.length ? this.#offersByType.find((offer) => offer.type === event.type).offers : [];
+    this.#isNewEvent = isNewEvent;
     this.#setInnerHandlers();
     this.#setDatepickerFrom();
     this.#setDatepickerTo();
@@ -148,7 +154,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   get template()
   {
-    return createEventEditTemplate(this._state, this.#offersByCurrentType);
+    return createEventEditTemplate(this._state, this.#offersByCurrentType, this.#isNewEvent);
   }
 
   _restoreHandlers = () => {
@@ -156,7 +162,10 @@ export default class EventEditView extends AbstractStatefulView {
     this.#setDatepickerFrom();
     this.#setDatepickerTo();
     this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setFormCloseClickHandler(this._callback.formCloseClick);
+    if(!this.#isNewEvent) {
+      this.setFormCloseClickHandler(this._callback.formCloseClick);
+    }
+    this.setFormDeleteHandler(this._callback.formDelete);
   };
 
   removeElement = () => {
@@ -166,6 +175,17 @@ export default class EventEditView extends AbstractStatefulView {
       this.#datepicker.destroy();
       this.#datepicker = null;
     }
+  };
+
+  setFormDeleteHandler(callback) {
+    this._callback.formDelete = callback;
+
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onFormDeleteClick);
+  };
+  #onFormDeleteClick = (evt) => {
+    evt.preventDefault();
+
+    this._callback.formDelete(EventEditView.parseStateToEvent(this._state));
   };
 
   #dateFromChangeHandler = ([userDate]) => {
@@ -213,11 +233,11 @@ export default class EventEditView extends AbstractStatefulView {
 
   static parseStateToEvent = (state) => ({...state});
 
-  #onPriceInput = (event) => {
-    event.preventDefault();
+  #onPriceInput = (evt) => {
+    evt.preventDefault();
 
     this._setState({
-      basePrice: event.target.value,
+      basePrice: Number(evt.target.value.replace(/[^\d]/g, '')),
     });
   };
 
@@ -260,13 +280,16 @@ export default class EventEditView extends AbstractStatefulView {
     });
   };
 
-  #onEventPlaceChange = (event) => {
-    event.preventDefault();
+  #onEventPlaceChange = (evt) => {
+    if(!destinationPlaces.includes(evt.target.value)) {
+      return;
+    }
+    evt.preventDefault();
 
     this.updateElement({
       destination: {...this._state.destination,
         description: shuffle(destinationDescriptions).slice(0, getRandomInteger(0, destinationMaxSentences)).join(' '),
-        name: event.target.value,
+        name: evt.target.value,
         pictures: Array.from({length: getRandomInteger(0, destinationMaxPhotoCount)}, () => (
           {
             src: `http://picsum.photos/248/152?r=${getRandomInteger(1, destinationMaxPhotoIndex)}`,

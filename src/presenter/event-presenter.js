@@ -1,7 +1,8 @@
 import EventView from '../view/event-view';
 import EventEditView from '../view/event-edit-view';
 import { render, replace, remove } from '../framework/render';
-import { pointMode } from '../utils/common';
+import { pointMode, UpdateType, UserAction } from '../utils/common';
+import { areDatesSame } from '../utils/event-date';
 
 export default class EventPresenter{
     #eventComponent;
@@ -75,6 +76,7 @@ export default class EventPresenter{
 
       this.#editFormComponent.setFormSubmitHandler(this.#onFormSubmit);
       this.#editFormComponent.setFormCloseClickHandler(this.#onFormCloseButtonClick);
+      this.#editFormComponent.setFormDeleteHandler(this.#onDeleteButtonClick);
     }
 
     #replacePointToForm() {
@@ -104,7 +106,10 @@ export default class EventPresenter{
     };
 
     #onFormSubmit = (tripEvent) => {
-      this.#changeData(tripEvent);
+      const isMinorUpdate = !areDatesSame(this.#event.dateFrom, tripEvent.dateFrom)
+      || !areDatesSame(this.#event.dateTo, tripEvent.dateTo)
+      || this.#event.basePrice !== tripEvent.basePrice;
+      this.#changeData(UserAction.UPDATE_TRIP_EVENT, isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH, tripEvent);
       this.#replaceFormToPoint();
     };
 
@@ -117,6 +122,10 @@ export default class EventPresenter{
     };
 
     #onFavoriteChangeClick = () => {
-      this.#changeData({...this.#event, isFavorite: !this.#event.isFavorite});
+      this.#changeData(UserAction.UPDATE_TRIP_EVENT, UpdateType.PATCH, {...this.#event, isFavorite: !this.#event.isFavorite});
+    };
+
+    #onDeleteButtonClick = (tripEvent) => {
+      this.#changeData(UserAction.DELETE_TRIP_EVENT, UpdateType.MINOR, tripEvent);
     };
 }
