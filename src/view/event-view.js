@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeEventTime, getTimeDifference } from '../utils/event-date.js';
-import { pointMode, uppperFirstSymbol } from '../utils/common.js';
+import { uppperFirstSymbol } from '../utils/common.js';
+import { PointMode } from '../const.js';
 
 
 const createEventTemplate = (tripEvent, offersByType) => {
@@ -64,7 +65,7 @@ export default class EventView extends AbstractView{
     super();
     this.#tripEvent = event;
     this.#offersByType = offersByType;
-    this.pointMode = pointMode.DEFAULT;
+    this.pointMode = PointMode.DEFAULT;
   }
 
   get template() {

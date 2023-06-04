@@ -2,10 +2,8 @@ import EventBoardPresenter from './presenter/events-board-presenter.js';
 import TripEventsModel from './model/events-model.js';
 import OfferByTypeModel from './model/offer-model.js';
 import TripEventDestinationModel from './model/destination-model.js';
-import { getRandomInteger } from './utils/common.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import FilterModel from './model/filter-model.js';
-import { render, RenderPosition } from './framework/render.js';
 
 const eventCount = 20;
 

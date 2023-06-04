@@ -1,6 +1,6 @@
 import EventEditView from '../view/event-edit-view';
 import { RenderPosition, remove, render } from '../framework/render';
-import { UpdateType, UserAction, types } from '../utils/common';
+import { UserAction, UpdateType, TYPES } from '../const';
 import {nanoid} from 'nanoid';
 import dayjs from 'dayjs';
 
@@ -50,7 +50,7 @@ export default class EventNewPresenter{
         destination: this.#destinations[0],
         isFavorite: false,
         offers: [],
-        type: types[0],
+        type: TYPES[0],
       };
     }
 

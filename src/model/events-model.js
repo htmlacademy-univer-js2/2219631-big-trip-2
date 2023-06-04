@@ -1,4 +1,5 @@
-import { types, getRandomInteger} from '../utils/common';
+import { getRandomInteger} from '../utils/common';
+import { TYPES } from '../const';
 import { generateDate } from '../utils/event-date';
 import { generateTripEvent } from '../mock/event';
 import Observable from '../framework/observable';
@@ -10,7 +11,7 @@ export default class TripEventsModel extends Observable{
     super();
     this.#tripEvents = Array.from({length: eventsCount},
       (tripEvent, id) => {
-        const type = types[getRandomInteger(0, types.length - 1)];
+        const type = TYPES[getRandomInteger(0, TYPES.length - 1)];
         return generateTripEvent(type, offersByType.length ? offersByType.find((offer) => offer.type === type).offers : [], destinations[id], generateDate());
       });
   }

@@ -1,11 +1,11 @@
 import EventListView from '../view/event-list-view';
 import SortView from '../view/sort-view';
 import { render, remove} from '../framework/render';
-import NoEventView from '../view/event-empty';
-import { FilterTypes, filter } from '../utils/filter';
+import EmptyTripEventsList from '../view/event-empty';
+import { filter } from '../utils/filter';
 import EventPresenter from './event-presenter';
-import { SortType, sortEventsByType } from '../utils/common';
-import { UserAction, UpdateType } from '../utils/common';
+import { sortEventsByType } from '../utils/common';
+import { UserAction, UpdateType, FilterTypes, SortType } from '../const';
 import EventNewPresenter from './event-new-presenter';
 
 
@@ -68,7 +68,7 @@ export default class EventBoardPresenter{
   }
 
   #renderNoEventsMessage() {
-    this.#noEventsMessage = new NoEventView(this.#filterModel.filterType);
+    this.#noEventsMessage = new EmptyTripEventsList(this.#filterModel.filterType);
     render(this.#noEventsMessage, this.#eventsComponent);
   }
 

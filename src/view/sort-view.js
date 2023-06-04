@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { SortType, uppperFirstSymbol } from '../utils/common.js';
+import { uppperFirstSymbol } from '../utils/common.js';
+import { SortType } from '../const.js';
 
 
 const createSortTemplate = (currentSortType) => (

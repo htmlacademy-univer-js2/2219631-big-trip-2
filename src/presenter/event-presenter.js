@@ -1,7 +1,7 @@
 import EventView from '../view/event-view';
 import EventEditView from '../view/event-edit-view';
 import { render, replace, remove } from '../framework/render';
-import { pointMode, UpdateType, UserAction } from '../utils/common';
+import { UserAction, UpdateType, PointMode } from '../const';
 import { areDatesSame } from '../utils/event-date';
 
 export default class EventPresenter{
@@ -21,7 +21,7 @@ export default class EventPresenter{
       this.#changeData = changeData;
       this.#changePointMode = changePointMode;
 
-      this.#pointMode = pointMode.DEFAULT;
+      this.#pointMode = PointMode.DEFAULT;
 
       this.#eventComponent = null;
       this.#editFormComponent = null;
@@ -33,7 +33,7 @@ export default class EventPresenter{
     }
 
     resetEventMode() {
-      if(this.#pointMode === pointMode.EDITING) {
+      if(this.#pointMode === PointMode.EDITING) {
         this.#replaceFormToPoint();
       }
     }
@@ -59,11 +59,11 @@ export default class EventPresenter{
         return;
       }
 
-      if(this.#pointMode === pointMode.DEFAULT) {
+      if(this.#pointMode === PointMode.DEFAULT) {
         replace(this.#eventComponent, previousEventComponent);
       }
 
-      if(this.#pointMode === pointMode.EDITING) {
+      if(this.#pointMode === PointMode.EDITING) {
         replace(this.#editFormComponent, previousEditFormComponent);
       }
 
@@ -85,7 +85,7 @@ export default class EventPresenter{
       document.addEventListener('keydown', this.#onEscapeKeyDown);
 
       this.#changePointMode();
-      this.#pointMode = pointMode.EDITING;
+      this.#pointMode = PointMode.EDITING;
     }
 
     #replaceFormToPoint() {
@@ -94,7 +94,7 @@ export default class EventPresenter{
 
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
 
-      this.#pointMode = pointMode.DEFAULT;
+      this.#pointMode = PointMode.DEFAULT;
     }
 
     #onFormOpenButtonClick = () => {

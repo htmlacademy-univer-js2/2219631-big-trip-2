@@ -2,8 +2,8 @@ import FilterView from '../view/filter-view';
 import TripInfoView from '../view/trip-info-view';
 import { render, RenderPosition, remove, replace } from '../framework/render';
 import { filter } from '../utils/filter';
-import { SortType, sortEventsByType } from '../utils/common';
-import { UserAction, UpdateType } from '../utils/common';
+import { sortEventsByType } from '../utils/common';
+import { UpdateType, SortType } from '../const';
 
 export default class FilterPresenter {
     #filterComponent = null;

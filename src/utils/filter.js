@@ -1,9 +1,5 @@
 import { isPast, isFuture } from './event-date';
-const FilterTypes = {
-  EVERYTHING: 'everything',
-  FUTURE: 'future',
-  PAST: 'past',
-};
+import { FilterTypes } from '../const';
 
 const filter = {
   [FilterTypes.EVERYTHING]: (tripEvents) => tripEvents,
@@ -11,4 +7,4 @@ const filter = {
   [FilterTypes.PAST]: (tripEvents) => tripEvents.filter((point) => isPast(point.dateTo, 'D') || isPast(point.dateFrom, 'D')),
 };
 
-export {FilterTypes, filter};
+export {filter};

@@ -1,7 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeEventTime } from '../utils/event-date.js';
-import { uppperFirstSymbol, shuffle, getRandomInteger, types } from '../utils/common.js';
-import { destinationDescriptions, destinationPlaces } from '../utils/destination.js';
+import { uppperFirstSymbol, shuffle, getRandomInteger } from '../utils/common.js';
+import { DESTINATION_DESCRIPTIONS, DESTINATION_PLACES, TYPES } from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
@@ -66,7 +66,7 @@ const createEventOffersTemplate = (event, offersByType) => {
 };
 
 const createEventType = (currentType) => (
-  Array.from(types, (eventType) => {
+  Array.from(TYPES, (eventType) => {
     const isChecked = eventType === currentType ? 'checked' : '';
     return (`<div class="event__type-item">
                   <input id="event-type-${eventType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}" ${isChecked}>
@@ -105,7 +105,7 @@ const createEventEditTemplate = (event, offersByType, isNewEvent) => {
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
             <datalist id="destination-list-1">
-            ${Array.from(destinationPlaces, (place) => `<option value="${place}"></option>`).join('')}
+            ${Array.from(DESTINATION_PLACES, (place) => `<option value="${place}"></option>`).join('')}
             </datalist>
           </div>
           <div class="event__field-group  event__field-group--time">
@@ -181,7 +181,8 @@ export default class EventEditView extends AbstractStatefulView {
     this._callback.formDelete = callback;
 
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onFormDeleteClick);
-  };
+  }
+
   #onFormDeleteClick = (evt) => {
     evt.preventDefault();
 
@@ -229,6 +230,7 @@ export default class EventEditView extends AbstractStatefulView {
       );
     }
   };
+
   static parseEventToState = (event) => ({...event, dateTo: dayjs(event.dateTo).toDate(), dateFrom: dayjs(event.dateFrom).toDate()});
 
   static parseStateToEvent = (state) => ({...state});
@@ -281,19 +283,19 @@ export default class EventEditView extends AbstractStatefulView {
   };
 
   #onEventPlaceChange = (evt) => {
-    if(!destinationPlaces.includes(evt.target.value)) {
+    if(!DESTINATION_PLACES.includes(evt.target.value)) {
       return;
     }
     evt.preventDefault();
 
     this.updateElement({
       destination: {...this._state.destination,
-        description: shuffle(destinationDescriptions).slice(0, getRandomInteger(0, destinationMaxSentences)).join(' '),
+        description: shuffle(DESTINATION_DESCRIPTIONS).slice(0, getRandomInteger(0, destinationMaxSentences)).join(' '),
         name: evt.target.value,
         pictures: Array.from({length: getRandomInteger(0, destinationMaxPhotoCount)}, () => (
           {
             src: `http://picsum.photos/248/152?r=${getRandomInteger(1, destinationMaxPhotoIndex)}`,
-            description: destinationDescriptions[getRandomInteger(0, destinationDescriptions.length - 1)],
+            description: DESTINATION_DESCRIPTIONS[getRandomInteger(0, DESTINATION_DESCRIPTIONS.length - 1)],
           }
         )),
       }
