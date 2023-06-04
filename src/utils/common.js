@@ -1,4 +1,5 @@
 import { sortByDate, sortByDuration } from './event-date';
+import { SortType } from '../const';
 const getRandomInteger = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -20,36 +21,12 @@ const shuffle = (array) => {
 };
 
 const uppperFirstSymbol = (x) => x.charAt(0).toUpperCase() + x.slice(1);
-const type = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-
-const pointMode = {
-  DEFAULT: 'default',
-  EDITING: 'editing',
-};
-
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
-const sortType = {
-  DAY: 'day',
-  TIME: 'time',
-  PRICE: 'price',
-};
 
 const sortEventsByType = {
-  [sortType.DAY]: (events) => events.sort(sortByDate),
-  [sortType.TIME]: (events) => events.sort(sortByDuration),
-  [sortType.PRICE]: (events) => events.sort((currPrice, nextPrice)=>nextPrice.basePrice - currPrice.basePrice),
+  [SortType.DAY]: (events) => events.sort(sortByDate),
+  [SortType.TIME]: (events) => events.sort(sortByDuration),
+  [SortType.PRICE]: (events) => events.sort((currPrice, nextPrice)=>nextPrice.basePrice - currPrice.basePrice),
 };
-export {getRandomInteger, shuffle, uppperFirstSymbol, type as types, pointMode, updateItem, sortType as SortType, sortEventsByType};
+
+
+export {getRandomInteger, shuffle, uppperFirstSymbol, sortEventsByType};

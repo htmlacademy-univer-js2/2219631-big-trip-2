@@ -1,59 +1,48 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeEventTime, getEarliestEvent, getLatestEvent } from '../utils/event-date.js';
+import { humanizeEventTime} from '../utils/event-date.js';
 
 const midEventsCount = 2;
 const maxEventsCount = 3;
 
-const getOverallSum = (tripEvents) => {
-  let sum = 0;
-  for(const point of tripEvents) {
-    sum += point.basePrice;
-  }
-  return sum;
-};
-
-const getTripTitle = (tripEvents, earliestPoint, latestPoint) => {
+const getTripTitle = (tripEvents) => {
   switch(tripEvents.length) {
     case 1:
-      return earliestPoint.destination.name;
+      return tripEvents[0].destination.name;
 
     case midEventsCount:
-      return `${earliestPoint.destination.name} &mdash; ${latestPoint.destination.name}`;
+      return `${tripEvents[0].destination.name} &mdash; ${tripEvents[tripEvents.length - 1].destination.name}`;
 
     case maxEventsCount:
-      return `${earliestPoint.destination.name} &mdash; ${tripEvents.find((point) => point.id !== earliestPoint.id && point.id !== latestPoint.id).destination.name} &mdash; ${latestPoint.destination.name}`;
+      return `${tripEvents[0].destination.name} &mdash; ${tripEvents[1].destination.name} &mdash; ${tripEvents[tripEvents.length - 1].destination.name}`;
 
     default:
-      return `${earliestPoint.destination.name} &mdash; . . . &mdash; ${latestPoint.destination.name}`;
+      return `${tripEvents[0].destination.name} &mdash; . . . &mdash; ${tripEvents[tripEvents.length - 1].destination.name}`;
   }
 };
 
-const createTripInfoTemplate = (tripEvents) => {
-  const earliestPoint = getEarliestEvent(tripEvents);
-  const latestPoint = getLatestEvent(tripEvents);
-
-  return(
-    `<section class="trip-main__trip-info  trip-info">
-      <div class="trip-info__main">
-        <h1 class="trip-info__title">${getTripTitle(tripEvents, earliestPoint, latestPoint)}</h1>
-        <p class="trip-info__dates">${humanizeEventTime(earliestPoint.dateFrom, 'MMM D')}&nbsp;&mdash;&nbsp;${humanizeEventTime(latestPoint.dateTo, 'MMM D')}</p>
-      </div>
-      <p class="trip-info__cost">
-        Total: &euro;&nbsp;<span class="trip-info__cost-value">${getOverallSum(tripEvents)}</span>
-      </p>
-    </section>`
-  );
-};
+const createTripInfoTemplate = (tripEvents, tripPrice) => (
+  `<section class="trip-main__trip-info  trip-info">
+    <div class="trip-info__main">
+      <h1 class="trip-info__title">${getTripTitle(tripEvents)}</h1>
+      <p class="trip-info__dates">${humanizeEventTime(tripEvents[0].dateFrom, 'MMM D')}&nbsp;&mdash;&nbsp;${humanizeEventTime(tripEvents[tripEvents.length - 1].dateTo, 'MMM D')}</p>
+    </div>
+    <p class="trip-info__cost">
+      Total: &euro;&nbsp;<span class="trip-info__cost-value">${tripPrice}</span>
+    </p>
+  </section>`
+);
 
 export default class TripInfoView extends AbstractView {
-  #events;
+  #tripEvents;
+  #tripPrice;
 
-  constructor (events) {
+  constructor(tripEvents, tripPrice) {
     super();
-    this.#events = events;
+    this.#tripEvents = tripEvents;
+    this.#tripPrice = tripPrice;
   }
 
   get template() {
-    return createTripInfoTemplate(this.#events);
+    return createTripInfoTemplate(this.#tripEvents, this.#tripPrice);
   }
 }

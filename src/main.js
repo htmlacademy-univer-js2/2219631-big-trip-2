@@ -1,24 +1,35 @@
-import HeaderPresenter from './presenter/header-presenter.js';
 import EventBoardPresenter from './presenter/events-board-presenter.js';
 import TripEventsModel from './model/events-model.js';
 import OfferByTypeModel from './model/offer-model.js';
 import TripEventDestinationModel from './model/destination-model.js';
-import { getRandomInteger } from './utils/common.js';
-import { generateFilters } from './mock/filter.js';
+import FilterPresenter from './presenter/filter-presenter.js';
+import FilterModel from './model/filter-model.js';
 
 const eventCount = 20;
 
-const headerContainer = document.querySelector('.trip-main');
+const mainContainer = document.querySelector('.trip-main');
+const filterContainer = mainContainer.querySelector('.trip-controls__filters');
 const eventComponent = document.querySelector('.trip-events');
+const newEventButton = mainContainer.querySelector('.trip-main__event-add-btn');
 
 const offerModel = new OfferByTypeModel();
 const destinationModel = new TripEventDestinationModel(eventCount);
-const eventModel = new TripEventsModel(getRandomInteger(0,1) ? 0 : eventCount, [...offerModel.offersByType], destinationModel.destinations);
-const filters = generateFilters(eventModel.tripEvents);
+const eventModel = new TripEventsModel(eventCount, offerModel.offersByType, destinationModel.destinations);
+const filterModel = new FilterModel();
 
-const headerPresenter = new HeaderPresenter(headerContainer, filters, eventModel.tripEvents);
-const eventPresenter = new EventBoardPresenter(eventComponent, eventModel, offerModel);
 
-headerPresenter.init();
+const eventPresenter = new EventBoardPresenter(eventComponent, eventModel, offerModel, destinationModel, filterModel);
+const filterPresenter = new FilterPresenter(filterContainer, mainContainer, filterModel, eventModel, offerModel);
+
+const onAddFormClose = () => {
+  newEventButton.disabled = false;
+};
+
+const onNewEventButtonClick = () => {
+  eventPresenter.createTripEvent(onAddFormClose);
+  newEventButton.disabled = true;
+};
+newEventButton.addEventListener('click', onNewEventButtonClick);
+filterPresenter.init();
 eventPresenter.init();
 
