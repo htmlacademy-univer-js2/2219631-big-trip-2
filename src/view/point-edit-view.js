@@ -130,8 +130,6 @@ const createPointEditTemplate = (point, offersByType, destinations, destinations
   );
 };
 export default class PointEditView extends AbstractStatefulView {
-  #datepickerFrom = null;
-  #datePickerTo = null;
   #datepicker = null;
   #offersByType;
   #offersByCurrentType;
@@ -203,7 +201,7 @@ export default class PointEditView extends AbstractStatefulView {
           dateFormat: 'd/m/y H:i',
           defaultDate: this._state.dateFrom,
           maxDate: this._state.dateTo,
-          onChange: this.#dateFromChangeHandler, // На событие flatpickr передаём наш колбэк
+          onChange: this.#dateFromChangeHandler,
         },
       );
     }
@@ -218,7 +216,7 @@ export default class PointEditView extends AbstractStatefulView {
           dateFormat: 'd/m/y H:i',
           defaultDate: this._state.dateTo,
           minDate: this._state.dateFrom,
-          onChange: this.#dateToChangeHandler, // На событие flatpickr передаём наш колбэк
+          onChange: this.#dateToChangeHandler,
         },
       );
     }
