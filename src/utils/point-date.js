@@ -28,7 +28,7 @@ const sortByDate = (currentPoint, nextPoint) => {
   return dateFromDifference === 0 ? dayjs(nextPoint.dateTo).diff(dayjs(currentPoint.dateTo)) : dateFromDifference;
 };
 
-const sortByDuration = (currentEvent, nextEvent) => dayjs(nextEvent.dateTo).diff(dayjs(nextEvent.dateFrom)) - dayjs(currentEvent.dateTo).diff(dayjs(currentEvent.dateFrom));
+const sortByDuration = (currentPoint, nextPoint) => dayjs(nextPoint.dateTo).diff(dayjs(nextPoint.dateFrom)) - dayjs(currentPoint.dateTo).diff(dayjs(currentPoint.dateFrom));
 const areDatesSame = (oldDate, newDate) => dayjs(oldDate).isSame(dayjs(newDate));
 
 export {humanizeEventTime, getTimeDifference, isPast, isFuture, sortByDate, sortByDuration, areDatesSame};
