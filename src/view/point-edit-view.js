@@ -3,7 +3,6 @@ import { humanizeEventTime } from '../utils/point-date.js';
 import { TYPES } from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import dayjs from 'dayjs';
 import he from 'he';
 
 const upperFirstSymbol = (word) => word.charAt(0).toUpperCase() + word.slice(1);
@@ -70,9 +69,6 @@ const createPointType = (currentType) => (
 );
 const createPointEditTemplate = (point, offersByType, destinations, destinationsNames, isNewEvent) => {
   const {basePrice, dateFrom, dateTo, destination, type, isDisabled, isSaving, isDeleting} = point;
-
-  const price = isNewEvent && basePrice === 0 ? '' : basePrice;
-  const isDeleted = isDeleting ? 'Deleting...' : 'Delete';
   const rollUpButton = isNewEvent ? '' :
     `<button class="event__rollup-btn" type="button">
       <span class="visually-hidden">Open event</span>
@@ -80,6 +76,7 @@ const createPointEditTemplate = (point, offersByType, destinations, destinations
   const currentDestination = destinations.find((place) => place.id === destination);
   const disabledTag = isDisabled ? 'disabled' : '';
   const deleteMessage = isDeleting ? 'Deleting...' : 'Delete';
+  const savingMessage = isSaving ? 'Saving...' : 'Save';
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -120,7 +117,7 @@ const createPointEditTemplate = (point, offersByType, destinations, destinations
             </label>
             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${disabledTag}>
           </div>
-          <button class="event__save-btn  btn  btn--blue" type="submit" ${disabledTag}>${isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${disabledTag}>${savingMessage}</button>
           <button class="event__reset-btn" type="reset" ${disabledTag}>${isNewEvent ? 'Cancel' : deleteMessage}</button>
           ${rollUpButton}
         </header>
@@ -229,11 +226,11 @@ export default class PointEditView extends AbstractStatefulView {
 
   static parsePointToState(point){
     return{...point,
-    isDisabled: false,
-    isSaving: false,
-    isDeleting: false,
-    }
-  };
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
+  }
 
   static parseStateToPoint(state){
     const point = {...state};

@@ -92,14 +92,14 @@ export default class PointNewPresenter{
 
       #generateDefaultPoint(){
         return{
-            id: 0,
-            basePrice: 0,
-            dateFrom: dayjs().toString(),
-            dateTo: dayjs().toString(),
-            destination: this.#destinations[0].id,
-            isFavorite: false,
-            offers: [],
-            type: TYPES[0],
-        }
+          id: 0,
+          basePrice: 0,
+          dateFrom: dayjs().toString(),
+          dateTo: dayjs().toString(),
+          destination: this.#destinations[0].id,
+          isFavorite: false,
+          offers: [],
+          type: TYPES[0],
+        };
       }
 }
