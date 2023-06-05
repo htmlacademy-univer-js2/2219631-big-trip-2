@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeEventTime, getTimeDifference } from '../utils/event-date.js';
+import { humanizeEventTime, getTimeDifference } from '../utils/point-date.js';
 import { PointMode } from '../const.js';
 import he from 'he';
 

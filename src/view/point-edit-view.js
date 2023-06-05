@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { humanizeEventTime } from '../utils/event-date.js';
+import { humanizeEventTime } from '../utils/point-date.js';
 import { TYPES } from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -26,11 +26,11 @@ const createDestinationTemplate = (destination) => {
   return '<section class="event__section  event__section--destination"></section>';
 };
 
-const createOffersTemplate = (event, offersByType, disabledTag) => {
-  const {offers} = event;
+const createOffersTemplate = (point, offersByType, disabledTag) => {
+  const {offers} = point;
 
   if(offersByType.length) {
-    const eventOffersByType = offersByType.map((offer) => {
+    const currentOffersByType = offersByType.map((offer) => {
       const checked = offers.includes(offer.id) ? 'checked' : '';
 
       const titleClass = offer.title.toLowerCase().replace(' ', '-');
@@ -51,7 +51,7 @@ const createOffersTemplate = (event, offersByType, disabledTag) => {
       `<section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
-          ${eventOffersByType}
+          ${currentOffersByType}
         </div>
       </section>`
     );
@@ -60,11 +60,11 @@ const createOffersTemplate = (event, offersByType, disabledTag) => {
 };
 
 const createPointType = (currentType) => (
-  Array.from(TYPES, (eventType) => {
-    const isChecked = eventType === currentType ? 'checked' : '';
+  Array.from(TYPES, (pointType) => {
+    const isChecked = pointType === currentType ? 'checked' : '';
     return (`<div class="event__type-item">
-                  <input id="event-type-${eventType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}" ${isChecked}>
-                  <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-1">${upperFirstSymbol(eventType)}</label>
+                  <input id="event-type-${pointType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${isChecked}>
+                  <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}-1">${upperFirstSymbol(pointType)}</label>
                 </div>`);
   }).join('')
 );

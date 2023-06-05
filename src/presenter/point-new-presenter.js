@@ -4,7 +4,7 @@ import { UserAction, UpdateType, TYPES } from '../const';
 import dayjs from 'dayjs';
 
 
-export default class EventNewPresenter{
+export default class PointNewPresenter{
     #pointsListContainer;
     #addFormComponent = null;
 

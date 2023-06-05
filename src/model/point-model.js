@@ -30,7 +30,7 @@ export default class PointsModel extends Observable{
       this.#points = [newPoint, ...this.#points];
       this._notify(updateType, newPoint);
     } catch (err){
-      throw new Error('Can\'t add event');
+      throw new Error('Can\'t add point');
     }
   };
 
@@ -38,7 +38,7 @@ export default class PointsModel extends Observable{
     const index = this.#points.findIndex((item) => item.id === update.id);
 
     if(index === -1) {
-      throw new Error('Can\'t update unexisting trip event');
+      throw new Error('Can\'t update unexisting point');
     }
 
     try {
@@ -47,7 +47,7 @@ export default class PointsModel extends Observable{
       this.#points = [...this.#points.slice(0, index), updatedPoint, ...this.#points.slice(index + 1)];
       this._notify(updateType, updatedPoint);
     } catch(err) {
-      throw new Error('Can\'t update trip event');
+      throw new Error('Can\'t update point');
     }
   };
 
@@ -55,14 +55,14 @@ export default class PointsModel extends Observable{
     const index = this.#points.findIndex((item) => item.id === update.id);
 
     if(index === -1) {
-      throw new Error('Can\'t delete unexisting trip event');
+      throw new Error('Can\'t delete unexisting point');
     }
     try {
       await this.#pointsApiService.deletePoint(update);
       this.#points = [...this.#points.slice(0, index), ...this.#points.slice(index + 1)];
       this._notify(updateType);
     } catch(err) {
-      throw new Error('Can\'t delete event');
+      throw new Error('Can\'t delete point');
     }
 
     this._notify(updateType);

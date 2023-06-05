@@ -1,9 +1,9 @@
 import { SortType } from '../const';
-import { sortByDate, sortByDuration } from './event-date';
+import { sortByDate, sortByDuration } from './point-date';
 
-const sortEventsByType = {
-  [SortType.DAY]: (events) => events.sort(sortByDate),
-  [SortType.TIME]: (events) => events.sort(sortByDuration),
-  [SortType.PRICE]: (events) => events.sort((currPrice, nextPrice)=>nextPrice.basePrice - currPrice.basePrice),
+const sortPointsByType = {
+  [SortType.DAY]: (points) => points.sort(sortByDate),
+  [SortType.TIME]: (points) => points.sort(sortByDuration),
+  [SortType.PRICE]: (points) => points.sort((currPrice, nextPrice)=>nextPrice.basePrice - currPrice.basePrice),
 };
-export {sortEventsByType};
+export {sortPointsByType};

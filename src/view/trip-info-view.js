@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeEventTime} from '../utils/event-date.js';
+import { humanizeEventTime} from '../utils/point-date.js';
 
 const midEventsCount = 2;
 const maxEventsCount = 3;
@@ -11,10 +11,10 @@ const getTripTitle = (points, destinations) => {
     case 1:
       return firstDestinationName;
 
-    case midEventsCount:
+    case 2:
       return `${firstDestinationName} &mdash; ${lastDestinationName}`;
 
-    case maxEventsCount:
+    case 3:
       return `${firstDestinationName} &mdash; ${destinations.find((place) => place.id === points[1].destination).name} &mdash; ${lastDestinationName}`;
 
     default:

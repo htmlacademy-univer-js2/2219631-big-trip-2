@@ -2,9 +2,9 @@ import PointView from '../view/point-view';
 import PointEditView from '../view/point-edit-view';
 import { render, replace, remove } from '../framework/render';
 import { UserAction, UpdateType, PointMode } from '../const';
-import { areDatesSame } from '../utils/event-date';
+import { areDatesSame } from '../utils/point-date';
 
-export default class EventPresenter{
+export default class PointPresenter{
     #pointComponent;
     #editFormComponent;
     #pointsListContainer;
