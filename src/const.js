@@ -35,15 +35,16 @@ const SortType = {
 };
 
 const UserAction = {
-  ADD_TRIP_EVENT: 'ADD_TRIP_EVENT',
-  UPDATE_TRIP_EVENT: 'UPDATE_TRIP_EVENT',
-  DELETE_TRIP_EVENT: 'DELETE_TRIP_EVENT',
+  ADD_POINT: 'ADD_POINT',
+  UPDATE_POINT: 'UPDATE_POINT',
+  DELETE_POINT: 'DELETE_POINT',
 };
 
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];

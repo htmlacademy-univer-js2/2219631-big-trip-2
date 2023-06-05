@@ -1,5 +1,4 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { uppperFirstSymbol } from '../utils/common.js';
 import { SortType } from '../const.js';
 
 
@@ -11,7 +10,7 @@ const createSortTemplate = (currentSortType) => (
     return (
       `<div class="trip-sort__item  trip-sort__item--${sortType}">
         <input id="sort-${sortType}" class="trip-sort__input  visually-hidden" data-sort-type="${sortType}" type="radio" name="trip-sort" value="sort-${sortType}" ${isDisabled} ${isChecked}>
-        <label class="trip-sort__btn" for="sort-${sortType}">${uppperFirstSymbol(sortType)}</label>
+        <label class="trip-sort__btn" for="sort-${sortType}">${sortType}</label>
       </div>`);}).join('')}
   </form>`
 );

@@ -1,9 +1,4 @@
 import dayjs from 'dayjs';
-import { getRandomInteger } from './common';
-
-const eventTimeGap = 480;
-const maxEventDuration = 48;
-const minEventDuration = 1;
 
 const maxMinutes = 60;
 const maxHours = 24;
@@ -23,12 +18,6 @@ const transformTimeDifference = (difference) => {
 
 const getTimeDifference = (dateFrom, dateTo) => transformTimeDifference(dayjs(dateTo).diff(dayjs(dateFrom), 'minute'));
 
-const generateDate = () => getRandomInteger(0, 1)
-  ? dayjs().add(getRandomInteger(0, eventTimeGap), 'hour').toString()
-  : dayjs().subtract(getRandomInteger(0, eventTimeGap), 'hour').toString();
-
-const generateDateTo = (dateFrom) => dayjs(dateFrom).add(getRandomInteger(minEventDuration, maxEventDuration), 'hour').toString();
-
 const isPast = (date, unit) => dayjs().isAfter(dayjs(date), unit);
 
 const isFuture = (date, unit) => dayjs().isBefore(dayjs(date), unit) || dayjs().isSame(dayjs(date), unit);
@@ -41,4 +30,5 @@ const sortByDate = (currentEvent, nextEvent) => {
 
 const sortByDuration = (currentEvent, nextEvent) => dayjs(nextEvent.dateTo).diff(dayjs(nextEvent.dateFrom)) - dayjs(currentEvent.dateTo).diff(dayjs(currentEvent.dateFrom));
 const areDatesSame = (oldDate, newDate) => dayjs(oldDate).isSame(dayjs(newDate));
-export {humanizeEventTime, getTimeDifference, generateDate, generateDateTo, isPast, isFuture, sortByDate, sortByDuration, areDatesSame};
+
+export {humanizeEventTime, getTimeDifference, isPast, isFuture, sortByDate, sortByDuration, areDatesSame};
