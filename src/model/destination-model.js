@@ -1,7 +1,6 @@
 import Observable from '../framework/observable';
-import { UpdateType } from '../const';
 
-export default class PointDestinationModel extends Observable{
+export default class DestinationModel extends Observable{
   #pointsApiService = null;
   #destinations = [];
 
@@ -16,7 +15,6 @@ export default class PointDestinationModel extends Observable{
     } catch (err) {
       this.#destinations = [];
     }
-    this._notify(UpdateType.INIT);
   }
 
   get destinations(){

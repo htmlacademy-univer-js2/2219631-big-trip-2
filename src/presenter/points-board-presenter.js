@@ -4,13 +4,18 @@ import LoadingView from '../view/loading-view';
 import EmptyPointsList from '../view/empty-points-list-view';
 import { render, remove} from '../framework/render';
 import { filter } from '../utils/filter';
-import EventPresenter from './event-presenter';
-import EventNewPresenter from './event-new-presenter';
-import { sortEventsByType } from '../utils/sort';
+import PointPresenter from './point-presenter';
+import PointNewPresenter from './point-new-presenter';
+import { sortPointsByType } from '../utils/sort';
 import { UserAction, UpdateType, FilterTypes, SortType } from '../const';
+import UiBlocker from '../framework/ui-blocker/ui-blocker';
 
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
-export default class EventBoardPresenter{
+export default class PointsBoardPresenter{
   #pointsModel;
   #offersByTypeModel;
   #destinationModel;
@@ -28,6 +33,7 @@ export default class EventBoardPresenter{
 
   #loadingComponent = new LoadingView();
   #isLoading = true;
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   constructor(pointsComponent, pointsModel, offersByTypeModel, destinationModel, filterModel) {
     this.#pointsModel = pointsModel;
@@ -39,7 +45,7 @@ export default class EventBoardPresenter{
     this.#pointsList = new PointsListView();
 
     this.#pointPresenter = new Map();
-    this.#pointNewPresenter = new EventNewPresenter(this.#pointsList.element, this.#offersByTypeModel.offersByType,
+    this.#pointNewPresenter = new PointNewPresenter(this.#pointsList.element, this.#offersByTypeModel.offersByType,
       this.#destinationModel.destinations, this.#handleViewAction);
 
     this.#sortComponent = null;
@@ -57,7 +63,7 @@ export default class EventBoardPresenter{
 
   get points() {
     const filteredPoints = filter[this.#filterModel.filterType]([...this.#pointsModel.points]);
-    return sortEventsByType[this.#currentSortType](filteredPoints);
+    return sortPointsByType[this.#currentSortType](filteredPoints);
   }
 
   createPoint(destroyCallback) {
@@ -102,7 +108,7 @@ export default class EventBoardPresenter{
   }
 
   #renderPoint(point) {
-    const pointPresenter = new EventPresenter(this.#pointsList.element, this.#offersByTypeModel.offersByType,this.#destinationModel.destinations ,this.#handleViewAction, this.#onPointModeChange);
+    const pointPresenter = new PointPresenter(this.#pointsList.element, this.#offersByTypeModel.offersByType,this.#destinationModel.destinations ,this.#handleViewAction, this.#onPointModeChange);
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   }
@@ -128,18 +134,36 @@ export default class EventBoardPresenter{
     this.#currentSortType = sortType;
   }
 
-  #handleViewAction = (userActionType, updateType, updatedItem) => {
+  #handleViewAction = async (userActionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch(userActionType) {
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPont(updateType, updatedItem);
+        //this.#pointPresenter.setSaving();
+        this.#pointNewPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch(err) {
+          this.#pointNewPresenter.setAborting();
+        }
         break;
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, updatedItem);
+        this.#pointPresenter.get(update.id).setSaving();
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, updatedItem);
+        this.#pointPresenter.get(update.id).setDeleting();
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, updatedItem) => {
@@ -156,10 +180,11 @@ export default class EventBoardPresenter{
         this.#renderBoard();
         break;
       case UpdateType.INIT:
-        if(this.#pointsModel.points.length && this.#offersByTypeModel.offersByType.length && this.#destinationModel.destinations.length){
-          this.#isLoading = false;
-          remove(this.#loadingComponent);
-          this.#renderBoard();}
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#pointNewPresenter = new PointNewPresenter(this.#pointsList.element, this.#offersByTypeModel.offersByType,
+          this.#destinationModel.destinations, this.#handleViewAction);
+        this.#renderBoard();
         break;
     }
   };

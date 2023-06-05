@@ -2,7 +2,7 @@ import FilterView from '../view/filter-view';
 import TripInfoView from '../view/trip-info-view';
 import { render, RenderPosition, remove, replace } from '../framework/render';
 import { filter } from '../utils/filter';
-import { sortEventsByType } from '../utils/sort';
+import { sortPointsByType } from '../utils/sort';
 import { UpdateType, SortType } from '../const';
 
 export default class FilterPresenter {
@@ -31,14 +31,14 @@ export default class FilterPresenter {
     }
 
     get filters() {
-      return Array.from(Object.entries(filter), ([filterType, filterEvents]) => ({
+      return Array.from(Object.entries(filter), ([filterType, filterPoints]) => ({
         type: filterType,
-        count: filterEvents(this.#pointModel.points).length,
+        count: filterPoints(this.#pointModel.points).length,
       }));
     }
 
     get points() {
-      return sortEventsByType[SortType.DAY](this.#pointModel.points);
+      return sortPointsByType[SortType.DAY](this.#pointModel.points);
     }
 
     init() {

@@ -1,5 +1,4 @@
 import Observable from '../framework/observable.js';
-import { UpdateType } from '../const.js';
 
 export default class OfferByTypeModel extends Observable{
   #pointsApiService = null;
@@ -15,7 +14,6 @@ export default class OfferByTypeModel extends Observable{
     } catch (err) {
       this.offers = [];
     }
-    this._notify(UpdateType.INIT);
   }
 
   get offersByType(){

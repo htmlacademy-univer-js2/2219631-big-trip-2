@@ -1,4 +1,4 @@
-import { isPast, isFuture } from './event-date';
+import { isPast, isFuture } from './point-date';
 import { FilterTypes } from '../const';
 
 const filter = {
