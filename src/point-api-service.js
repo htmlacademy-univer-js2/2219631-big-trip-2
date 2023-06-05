@@ -34,16 +34,16 @@ export default class PointsApiService extends ApiService {
 
   #adaptToServer = (point) => {
     const adaptedPoint = {...point,
-      'base_price': point.base_price,
-      'date_from': point.date_from,
-      'date_to': point.date_to,
+      'base_price': point.basePrice,
+      'date_from': point.dateFrom,
+      'date_to': point.dateTo,
       'is_favorite': point.isFavorite,
     };
 
     // Ненужные ключи мы удаляем
-    delete adaptedPoint.base_price;
-    delete adaptedPoint.date_from;
-    delete adaptedPoint.date_to;
+    delete adaptedPoint.basePrice;
+    delete adaptedPoint.dateFrom;
+    delete adaptedPoint.dateTo;
     delete adaptedPoint.isFavorite;
 
     return adaptedPoint;
