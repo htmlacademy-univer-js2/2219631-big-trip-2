@@ -4,12 +4,11 @@ import { PointMode } from '../const.js';
 import he from 'he';
 
 
-const createEventTemplate = (tripEvent, offersByType) => {
+const createEventTemplate = (tripEvent, offersByType, destinations) => {
   const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = tripEvent;
-
   const isFavoriteButtonClass = isFavorite ? 'event__favorite-btn--active' : '';
-
   const timeDifference = getTimeDifference(dateFrom, dateTo);
+  const currentDestination = destinations.find((place) => place.id === destination);
 
   const eventOffersByType = offersByType.length && offers.length ? offersByType
     .find((offer) => offer.type === type)
@@ -28,7 +27,7 @@ const createEventTemplate = (tripEvent, offersByType) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${he.encode(destination.name)}</h3>
+        <h3 class="event__title">${type} ${he.encode(currentDestination.name)}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${humanizeEventTime(dateFrom, 'YYYY-MM-DD[T]HH:mm')}">${humanizeEventTime(dateFrom, 'HH:mm')}</time>
@@ -60,16 +59,18 @@ const createEventTemplate = (tripEvent, offersByType) => {
 export default class EventView extends AbstractView{
   #tripEvent;
   #offersByType;
+  #destinations;
 
-  constructor(event, offersByType) {
+  constructor(event, offersByType, destinations) {
     super();
     this.#tripEvent = event;
     this.#offersByType = offersByType;
+    this.#destinations = destinations;
     this.pointMode = PointMode.DEFAULT;
   }
 
   get template() {
-    return createEventTemplate(this.#tripEvent, this.#offersByType);
+    return createEventTemplate(this.#tripEvent, this.#offersByType, this.#destinations);
   }
 
   setFormOpenClickHandler(callback) {

@@ -10,13 +10,15 @@ export default class EventPresenter{
     #eventsListContainer;
     #event;
     #offersByType;
+    #destinations;
     #changeData;
     #changePointMode;
     #pointMode;
 
-    constructor(eventsListContainer, offersByType, changeData, changePointMode) {
+    constructor(eventsListContainer, offersByType, destinations, changeData, changePointMode) {
       this.#eventsListContainer = eventsListContainer;
       this.#offersByType = offersByType;
+      this.#destinations = destinations;
 
       this.#changeData = changeData;
       this.#changePointMode = changePointMode;
@@ -47,7 +49,7 @@ export default class EventPresenter{
       const previousEventComponent = this.#eventComponent;
       const previousEditFormComponent = this.#editFormComponent;
 
-      this.#eventComponent = new EventView(this.#event, this.#offersByType);
+      this.#eventComponent = new EventView(this.#event, this.#offersByType, this.#destinations);
 
       this.#renderEditFormComponent();
 
@@ -72,7 +74,7 @@ export default class EventPresenter{
     }
 
     #renderEditFormComponent() {
-      this.#editFormComponent = new EventEditView(this.#event, this.#offersByType);
+      this.#editFormComponent = new EventEditView(this.#event, this.#offersByType, this.#destinations);
 
       this.#editFormComponent.setFormSubmitHandler(this.#onFormSubmit);
       this.#editFormComponent.setFormCloseClickHandler(this.#onFormCloseButtonClick);

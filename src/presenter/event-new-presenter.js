@@ -3,7 +3,16 @@ import { RenderPosition, remove, render } from '../framework/render';
 import { UserAction, UpdateType, TYPES } from '../const';
 import {nanoid} from 'nanoid';
 import dayjs from 'dayjs';
-
+const DEFAULT_EVENT = {
+  id: 0,
+  basePrice: 0,
+  dateFrom: dayjs().toString(),
+  dateTo: dayjs().toString(),
+  destination: 0,
+  isFavorite: false,
+  offers: [],
+  type: TYPES[0],
+};
 export default class EventNewPresenter{
     #tripEventsListContainer;
     #addFormComponent = null;
@@ -41,33 +50,20 @@ export default class EventNewPresenter{
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
     }
 
-      #getDefaultTripEvent() {
-      return {
-        id: 0,
-        basePrice: 0,
-        dateFrom: dayjs().toString(),
-        dateTo: dayjs().toString(),
-        destination: this.#destinations[0],
-        isFavorite: false,
-        offers: [],
-        type: TYPES[0],
-      };
-    }
-
       #renderAddFormComponent() {
-        if(this.#addFormComponent !== null) {
-          return;
-        }
-
-        this.#addFormComponent = new EventEditView(this.#getDefaultTripEvent(), this.#offersByType, true);
-
-        this.#addFormComponent.setFormSubmitHandler(this.#onFormSubmit);
-        this.#addFormComponent.setFormDeleteHandler(this.#onCancelButtonClick);
-
-        render(this.#addFormComponent, this.#tripEventsListContainer, RenderPosition.AFTERBEGIN);
-
-        document.addEventListener('keydown', this.#onEscapeKeyDown);
+      if(this.#addFormComponent !== null) {
+        return;
       }
+
+      this.#addFormComponent = new EventEditView(DEFAULT_EVENT, this.#offersByType, this.#destinations, true);
+
+      this.#addFormComponent.setFormSubmitHandler(this.#onFormSubmit);
+      this.#addFormComponent.setFormDeleteHandler(this.#onCancelButtonClick);
+
+      render(this.#addFormComponent, this.#tripEventsListContainer, RenderPosition.AFTERBEGIN);
+
+      document.addEventListener('keydown', this.#onEscapeKeyDown);
+    }
 
       #onFormSubmit = (tripEvent) => {
         this.#changeData(UserAction.ADD_TRIP_EVENT, UpdateType.MINOR, {id: nanoid(), ...tripEvent});

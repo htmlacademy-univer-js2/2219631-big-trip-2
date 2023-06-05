@@ -4,26 +4,28 @@ import { humanizeEventTime} from '../utils/event-date.js';
 const midEventsCount = 2;
 const maxEventsCount = 3;
 
-const getTripTitle = (tripEvents) => {
+const getTripTitle = (tripEvents, destinations) => {
+  const firstDestinationName = destinations.find((place) => place.id === tripEvents[0].destination).name;
+  const lastDestinationName = destinations.find((place) => place.id === tripEvents[tripEvents.length - 1].destination).name;
   switch(tripEvents.length) {
     case 1:
-      return tripEvents[0].destination.name;
+      return firstDestinationName;
 
     case midEventsCount:
-      return `${tripEvents[0].destination.name} &mdash; ${tripEvents[tripEvents.length - 1].destination.name}`;
+      return `${firstDestinationName} &mdash; ${lastDestinationName}`;
 
     case maxEventsCount:
-      return `${tripEvents[0].destination.name} &mdash; ${tripEvents[1].destination.name} &mdash; ${tripEvents[tripEvents.length - 1].destination.name}`;
+      return `${firstDestinationName} &mdash; ${destinations.find((place) => place.id === tripEvents[1].destination).name} &mdash; ${lastDestinationName}`;
 
     default:
-      return `${tripEvents[0].destination.name} &mdash; . . . &mdash; ${tripEvents[tripEvents.length - 1].destination.name}`;
+      return `${firstDestinationName} &mdash; . . . &mdash; ${lastDestinationName}`;
   }
 };
 
-const createTripInfoTemplate = (tripEvents, tripPrice) => (
+const createTripInfoTemplate = (tripEvents, tripPrice, destinations) => (
   `<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
-      <h1 class="trip-info__title">${getTripTitle(tripEvents)}</h1>
+      <h1 class="trip-info__title">${getTripTitle(tripEvents, destinations)}</h1>
       <p class="trip-info__dates">${humanizeEventTime(tripEvents[0].dateFrom, 'MMM D')}&nbsp;&mdash;&nbsp;${humanizeEventTime(tripEvents[tripEvents.length - 1].dateTo, 'MMM D')}</p>
     </div>
     <p class="trip-info__cost">
@@ -35,14 +37,16 @@ const createTripInfoTemplate = (tripEvents, tripPrice) => (
 export default class TripInfoView extends AbstractView {
   #tripEvents;
   #tripPrice;
+  #destinations;
 
-  constructor(tripEvents, tripPrice) {
+  constructor(tripEvents, tripPrice, destinations) {
     super();
     this.#tripEvents = tripEvents;
     this.#tripPrice = tripPrice;
+    this.#destinations = destinations;
   }
 
   get template() {
-    return createTripInfoTemplate(this.#tripEvents, this.#tripPrice);
+    return createTripInfoTemplate(this.#tripEvents, this.#tripPrice, this.#destinations);
   }
 }

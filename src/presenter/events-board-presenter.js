@@ -4,9 +4,10 @@ import { render, remove} from '../framework/render';
 import EmptyTripEventsList from '../view/event-empty';
 import { filter } from '../utils/filter';
 import EventPresenter from './event-presenter';
-import { sortEventsByType } from '../utils/common';
+import { sortEventsByType } from '../utils/sort';
 import { UserAction, UpdateType, FilterTypes, SortType } from '../const';
 import EventNewPresenter from './event-new-presenter';
+import LoadingView from '../view/loading-view';
 
 
 export default class EventBoardPresenter{
@@ -21,6 +22,8 @@ export default class EventBoardPresenter{
   #eventNewPresenter;
   #sortComponent;
   #currentSortType = SortType.DAY;
+  #loadingComponent = new LoadingView();
+  #isLoading = true;
 
   constructor(eventsComponent, eventsModel, offersModel, destinationModel, filterModel) {
     this.#eventsModel = eventsModel;
@@ -32,13 +35,15 @@ export default class EventBoardPresenter{
     this.#eventsList = new EventListView();
 
     this.#eventPresenter = new Map();
-    this.#eventNewPresenter = new EventNewPresenter(this.#eventsList.element, this.#offersModel.offersByType,
+    this.#eventNewPresenter = new EventNewPresenter(this.#eventsList.element, this.#offersModel.offers,
       this.#destinationModel.destinations, this.#handleViewAction);
 
     this.#sortComponent = null;
     this.#currentSortType = SortType.DAY;
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
+    this.#offersModel.addObserver(this.#handleModelEvent);
+    this.#destinationModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
@@ -58,7 +63,12 @@ export default class EventBoardPresenter{
   }
 
   #renderBoard() {
-    if(this.tripEvents.length === 0){
+    if(this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
+    if(!this.tripEvents.length){
       this.#renderNoEventsMessage();
       return;
     }
@@ -89,9 +99,13 @@ export default class EventBoardPresenter{
   }
 
   #renderEvent(event) {
-    const eventPresenter = new EventPresenter(this.#eventsList.element, this.#offersModel.offersByType, this.#handleViewAction, this.#onEventModeChange);
+    const eventPresenter = new EventPresenter(this.#eventsList.element, this.#offersModel.offers,this.#destinationModel.destinations ,this.#handleViewAction, this.#onEventModeChange);
     eventPresenter.init(event);
     this.#eventPresenter.set(event.id, eventPresenter);
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#eventsComponent);
   }
 
   #clearBoard(sortType) {
@@ -101,6 +115,7 @@ export default class EventBoardPresenter{
     this.#eventPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     remove(this.#noEventsMessage);
 
     if(this.#noEventsMessage) {
@@ -136,6 +151,12 @@ export default class EventBoardPresenter{
       case UpdateType.MAJOR:
         this.#clearBoard(SortType.DAY);
         this.#renderBoard();
+        break;
+      case UpdateType.INIT:
+        if(this.#eventsModel.tripEvents.length && this.#offersModel.offers.length && this.#destinationModel.destinations.length){
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();}
         break;
     }
   };

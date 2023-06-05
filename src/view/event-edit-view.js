@@ -1,27 +1,20 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeEventTime } from '../utils/event-date.js';
-import { uppperFirstSymbol, shuffle, getRandomInteger } from '../utils/common.js';
-import { DESTINATION_DESCRIPTIONS, DESTINATION_PLACES, TYPES } from '../const.js';
+import { TYPES } from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
 import he from 'he';
 
-
-const destinationMaxSentences = 5;
-
-const destinationMaxPhotoIndex = 100;
-const destinationMaxPhotoCount = 5;
-
-
-const createEventDestinationTemplate = (event) => {
-  if(event.destination.description.length || event.destination.pictures.length) {
-    const pictures = event.destination.pictures.map((picture) =>
+const upperFirstSymbol = (word) => word.charAt(0).toUpperCase() + word.slice(1);
+const createEventDestinationTemplate = (destination) => {
+  if(destination.description.length || destination.pictures.length) {
+    const pictures = destination.pictures.map((picture) =>
       `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('');
     return(
       `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">${event.destination.description}</p>
+    <p class="event__destination-description">${destination.description}</p>
     <div class="event__photos-container">
       <div class="event__photos-tape">
         ${pictures}
@@ -71,11 +64,11 @@ const createEventType = (currentType) => (
     const isChecked = eventType === currentType ? 'checked' : '';
     return (`<div class="event__type-item">
                   <input id="event-type-${eventType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}" ${isChecked}>
-                  <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-1">${uppperFirstSymbol(eventType)}</label>
+                  <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-1">${upperFirstSymbol(eventType)}</label>
                 </div>`);
   }).join('')
 );
-const createEventEditTemplate = (event, offersByType, isNewEvent) => {
+const createEventEditTemplate = (event, offersByType, destinations, destinationsNames, isNewEvent) => {
   const {basePrice, dateFrom, dateTo, destination, type} = event;
 
   const price = isNewEvent && basePrice === 0 ? '' : basePrice;
@@ -83,6 +76,7 @@ const createEventEditTemplate = (event, offersByType, isNewEvent) => {
     `<button class="event__rollup-btn" type="button">
       <span class="visually-hidden">Open event</span>
     </button>`;
+  const currentDestination = destinations.find((place) => place.id === destination);
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -102,11 +96,11 @@ const createEventEditTemplate = (event, offersByType, isNewEvent) => {
           </div>
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              ${uppperFirstSymbol(type)}
+              ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination.name)}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(currentDestination.name)}" list="destination-list-1">
             <datalist id="destination-list-1">
-            ${Array.from(DESTINATION_PLACES, (place) => `<option value="${place}"></option>`).join('')}
+            ${Array.from(destinationsNames, (place) => `<option value="${place}"></option>`).join('')}
             </datalist>
           </div>
           <div class="event__field-group  event__field-group--time">
@@ -129,7 +123,7 @@ const createEventEditTemplate = (event, offersByType, isNewEvent) => {
         </header>
         <section class="event__details">
         ${createEventOffersTemplate(event, offersByType)}
-        ${createEventDestinationTemplate(event)}
+        ${createEventDestinationTemplate(currentDestination)}
         </section>
       </form>
     </li>`
@@ -141,12 +135,16 @@ export default class EventEditView extends AbstractStatefulView {
   #datepicker = null;
   #offersByType;
   #offersByCurrentType;
+  #destinations;
+  #destinationsNames;
   #isNewEvent;
-  constructor (event, offersByType, isNewEvent = false) {
+  constructor (event, offersByType, destinations, isNewEvent = false) {
     super();
     this._state = EventEditView.parseEventToState(event);
     this.#offersByType = offersByType;
     this.#offersByCurrentType = this.#offersByType.length ? this.#offersByType.find((offer) => offer.type === event.type).offers : [];
+    this.#destinations = destinations;
+    this.#destinationsNames = Array.from(this.#destinations, (destination) => destination.name);
     this.#isNewEvent = isNewEvent;
     this.#setInnerHandlers();
     this.#setDatepickerFrom();
@@ -155,7 +153,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   get template()
   {
-    return createEventEditTemplate(this._state, this.#offersByCurrentType, this.#isNewEvent);
+    return createEventEditTemplate(this._state, this.#offersByCurrentType, this.#destinations, this.#destinationsNames, this.#isNewEvent);
   }
 
   _restoreHandlers = () => {
@@ -279,27 +277,17 @@ export default class EventEditView extends AbstractStatefulView {
 
     this.updateElement({
       type: evt.target.value,
-      offers: this.#offersByCurrentType.length ? shuffle(Array.from(this.#offersByCurrentType, (offer) => offer.id)).slice(0, getRandomInteger(1, this.#offersByCurrentType.length)) : [],
     });
   };
 
   #onEventPlaceChange = (evt) => {
-    if(!DESTINATION_PLACES.includes(evt.target.value)) {
+    if(!this.#destinationsNames.includes(evt.target.value)) {
       return;
     }
     evt.preventDefault();
 
     this.updateElement({
-      destination: {...this._state.destination,
-        description: shuffle(DESTINATION_DESCRIPTIONS).slice(0, getRandomInteger(0, destinationMaxSentences)).join(' '),
-        name: evt.target.value,
-        pictures: Array.from({length: getRandomInteger(0, destinationMaxPhotoCount)}, () => (
-          {
-            src: `http://picsum.photos/248/152?r=${getRandomInteger(1, destinationMaxPhotoIndex)}`,
-            description: DESTINATION_DESCRIPTIONS[getRandomInteger(0, DESTINATION_DESCRIPTIONS.length - 1)],
-          }
-        )),
-      }
+      destination: this.#destinations.find((place)=>place.name === evt.target.value).id,
     });
   };
 

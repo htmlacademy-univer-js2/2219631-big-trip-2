@@ -1,34 +1,24 @@
-import { generateOffersByType, generateOffer } from '../mock/offer.js';
-import { shuffle, getRandomInteger } from '../utils/common.js';
-import { TYPES, OFFER_TITLES } from '../const.js';
 import Observable from '../framework/observable.js';
-
+import { UpdateType } from '../const.js';
 
 export default class OfferByTypeModel extends Observable{
-  #offers;
-  #offersByType;
-  constructor(){
+  #tripEventsApiService = null;
+  #offers = [];
+  constructor(tripEventsApiService){
     super();
-    this.#offers = Array.from(OFFER_TITLES, (title, id) => generateOffer(id, title));
-    this.#offersByType = Array.from(TYPES, (type) => generateOffersByType(type, shuffle(this.offers).
-      slice(0, getRandomInteger(1, this.offers.length))));
+    this.#tripEventsApiService = tripEventsApiService;
   }
 
-  get offersByType() {
-    return this.#offersByType;
+  init = async () => {
+    try{
+      this.#offers = await this.#tripEventsApiService.offers;
+    } catch (err) {
+      this.offers = [];
+    }
+    this._notify(UpdateType.INIT);
   }
 
-  get offers() {
+  get offers(){
     return this.#offers;
-  }
-
-  setOffersByType(updateType, offersByType) {
-    this.#offersByType = offersByType;
-    this._notify(updateType, offersByType);
-  }
-
-  setOffers(updateType, offers) {
-    this.#offers = offers;
-    this._notify(updateType, offers);
   }
 }
