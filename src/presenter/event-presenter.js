@@ -31,8 +31,8 @@ export default class EventPresenter{
       this.#editFormComponent = null;
     }
 
-    init(event) {
-      this.#point = event;
+    init(point) {
+      this.#point = point;
       this.#renderPointComponent();
     }
 
@@ -68,7 +68,8 @@ export default class EventPresenter{
       }
 
       if(this.#pointMode === PointMode.EDITING) {
-        replace(this.#editFormComponent, previousEditFormComponent);
+        replace(this.#pointComponent, previousEditFormComponent);
+        this.#point = PointMode.DEFAULT;
       }
 
       remove(previousPointComponent);
@@ -131,5 +132,40 @@ export default class EventPresenter{
 
     #onDeleteButtonClick = (point) => {
       this.#changeData(UserAction.DELETE_POINT, UpdateType.MINOR, point);
+    };
+
+    setSaving = () => {
+      if (this.#pointMode === PointMode.EDITING) {
+        this.#editFormComponent.updateElement({
+          isDisabled: true,
+          isSaving: true,
+        });
+      }
+    };
+
+    setDeleting = () => {
+      if (this.#pointMode === PointMode.EDITING) {
+        this.#editFormComponent.updateElement({
+          isDisabled: true,
+          isDeleting: true,
+        });
+      }
+    };
+
+    setAborting = () => {
+      if (this.#pointMode === PointMode.DEFAULT) {
+        this.#pointComponent.shake();
+        return;
+      }
+
+      const resetFormState = () => {
+        this.#editFormComponent.updateElement({
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false,
+        });
+      };
+
+      this.#editFormComponent.shake(resetFormState);
     };
 }

@@ -16,7 +16,6 @@ export default class PointDestinationModel extends Observable{
     } catch (err) {
       this.#destinations = [];
     }
-    this._notify(UpdateType.INIT);
   }
 
   get destinations(){

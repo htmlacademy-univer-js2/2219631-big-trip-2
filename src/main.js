@@ -39,9 +39,7 @@ eventPresenter.init();
 offerByTypeModel.init().finally(()=>{
   destinationModel.init().finally(()=>{
     pointModel.init().finally(()=>{
-      if (offerByTypeModel.offersByType.length && destinationModel.destinations.length) {
-        newEventButton.addEventListener('click', onNewEventButtonClick);
-      }
+      newEventButton.addEventListener('click', onNewEventButtonClick);
     });
   });
 });
