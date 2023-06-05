@@ -13,42 +13,42 @@ export default class FilterPresenter {
     #tripInfoContainer;
 
     #filterModel;
-    #tripEventModel;
-    #offersModel;
+    #pointModel;
+    #offersByTypeModel;
     #destinationsModel;
 
-    constructor(filterContainer, tripInfoContainer, filterModel, tripEventModel, offersModel, destinationsModel) {
+    constructor(filterContainer, tripInfoContainer, filterModel, pointModel, offersByTypeModel, destinationsModel) {
       this.#filterContainer = filterContainer;
       this.#tripInfoContainer = tripInfoContainer;
 
       this.#filterModel = filterModel;
-      this.#tripEventModel = tripEventModel;
-      this.#offersModel = offersModel;
+      this.#pointModel = pointModel;
+      this.#offersByTypeModel = offersByTypeModel;
       this.#destinationsModel = destinationsModel;
 
       this.#filterModel.addObserver(this.#handleModelEvent);
-      this.#tripEventModel.addObserver(this.#handleModelEvent);
+      this.#pointModel.addObserver(this.#handleModelEvent);
     }
 
     get filters() {
       return Array.from(Object.entries(filter), ([filterType, filterEvents]) => ({
         type: filterType,
-        count: filterEvents(this.#tripEventModel.tripEvents).length,
+        count: filterEvents(this.#pointModel.points).length,
       }));
     }
 
-    get tripEvents() {
-      return sortEventsByType[SortType.DAY](this.#tripEventModel.tripEvents);
+    get points() {
+      return sortEventsByType[SortType.DAY](this.#pointModel.points);
     }
 
     init() {
       const previousFilterComponent = this.#filterComponent;
       const previousInfoComponent = this.#tripInfoComponent;
 
-      const tripEvents = this.tripEvents;
+      const points = this.points;
 
-      if(tripEvents.length && this.#offersModel.offers.length && this.#destinationsModel.destinations.length) {
-        this.#tripInfoComponent = new TripInfoView(tripEvents, this.#getOverallTripPrice(tripEvents), this.#destinationsModel.destinations);
+      if(points.length && this.#offersByTypeModel.offersByType.length && this.#destinationsModel.destinations.length) {
+        this.#tripInfoComponent = new TripInfoView(points, this.#getOverallTripPrice(points), this.#destinationsModel.destinations);
       }
 
       this.#filterComponent = new FilterView(this.filters, this.#filterModel.filterType);
@@ -74,12 +74,12 @@ export default class FilterPresenter {
       remove(previousFilterComponent);
     }
 
-    #getOverallTripPrice(tripEvents) {
+    #getOverallTripPrice(points) {
       let sum = 0;
 
-      for(const point of tripEvents) {
+      for(const point of points) {
         sum += point.basePrice;
-        const currentOffers = this.#offersModel.offers.find((offer) => offer.type === point.type).offers;
+        const currentOffers = this.#offersByTypeModel.offersByType.find((offer) => offer.type === point.type).offers;
         point.offers.forEach((offer) => {
           sum += currentOffers.find((currentOffer) => currentOffer.id === offer).price;
         });

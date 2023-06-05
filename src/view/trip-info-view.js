@@ -4,10 +4,10 @@ import { humanizeEventTime} from '../utils/event-date.js';
 const midEventsCount = 2;
 const maxEventsCount = 3;
 
-const getTripTitle = (tripEvents, destinations) => {
-  const firstDestinationName = destinations.find((place) => place.id === tripEvents[0].destination).name;
-  const lastDestinationName = destinations.find((place) => place.id === tripEvents[tripEvents.length - 1].destination).name;
-  switch(tripEvents.length) {
+const getTripTitle = (points, destinations) => {
+  const firstDestinationName = destinations.find((place) => place.id === points[0].destination).name;
+  const lastDestinationName = destinations.find((place) => place.id === points[points.length - 1].destination).name;
+  switch(points.length) {
     case 1:
       return firstDestinationName;
 
@@ -15,18 +15,18 @@ const getTripTitle = (tripEvents, destinations) => {
       return `${firstDestinationName} &mdash; ${lastDestinationName}`;
 
     case maxEventsCount:
-      return `${firstDestinationName} &mdash; ${destinations.find((place) => place.id === tripEvents[1].destination).name} &mdash; ${lastDestinationName}`;
+      return `${firstDestinationName} &mdash; ${destinations.find((place) => place.id === points[1].destination).name} &mdash; ${lastDestinationName}`;
 
     default:
       return `${firstDestinationName} &mdash; . . . &mdash; ${lastDestinationName}`;
   }
 };
 
-const createTripInfoTemplate = (tripEvents, tripPrice, destinations) => (
+const createTripInfoTemplate = (points, tripPrice, destinations) => (
   `<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
-      <h1 class="trip-info__title">${getTripTitle(tripEvents, destinations)}</h1>
-      <p class="trip-info__dates">${humanizeEventTime(tripEvents[0].dateFrom, 'MMM D')}&nbsp;&mdash;&nbsp;${humanizeEventTime(tripEvents[tripEvents.length - 1].dateTo, 'MMM D')}</p>
+      <h1 class="trip-info__title">${getTripTitle(points, destinations)}</h1>
+      <p class="trip-info__dates">${humanizeEventTime(points[0].dateFrom, 'MMM D')}&nbsp;&mdash;&nbsp;${humanizeEventTime(points[points.length - 1].dateTo, 'MMM D')}</p>
     </div>
     <p class="trip-info__cost">
       Total: &euro;&nbsp;<span class="trip-info__cost-value">${tripPrice}</span>
@@ -35,18 +35,18 @@ const createTripInfoTemplate = (tripEvents, tripPrice, destinations) => (
 );
 
 export default class TripInfoView extends AbstractView {
-  #tripEvents;
+  #points;
   #tripPrice;
   #destinations;
 
-  constructor(tripEvents, tripPrice, destinations) {
+  constructor(points, tripPrice, destinations) {
     super();
-    this.#tripEvents = tripEvents;
+    this.#points = points;
     this.#tripPrice = tripPrice;
     this.#destinations = destinations;
   }
 
   get template() {
-    return createTripInfoTemplate(this.#tripEvents, this.#tripPrice, this.#destinations);
+    return createTripInfoTemplate(this.#points, this.#tripPrice, this.#destinations);
   }
 }

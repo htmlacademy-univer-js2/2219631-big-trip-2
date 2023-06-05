@@ -7,10 +7,10 @@ const MessagesByFilterType = {
   [FilterTypes.PAST]: 'There are no past events now',
 };
 
-const createEmptyListTemplate = (filterType) => `<p class="trip-events__msg">${MessagesByFilterType[filterType]}</p>`;
+const createEmptyPointsListTemplate = (filterType) => `<p class="trip-events__msg">${MessagesByFilterType[filterType]}</p>`;
 
 
-export default class EmptyTripEventsList extends AbstractView {
+export default class EmptyPointsList extends AbstractView {
   #filterType;
 
   constructor(filterType) {
@@ -19,6 +19,6 @@ export default class EmptyTripEventsList extends AbstractView {
   }
 
   get template() {
-    return createEmptyListTemplate(this.#filterType);
+    return createEmptyPointsListTemplate(this.#filterType);
   }
 }

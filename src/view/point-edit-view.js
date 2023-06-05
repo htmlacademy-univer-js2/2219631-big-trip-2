@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import he from 'he';
 
 const upperFirstSymbol = (word) => word.charAt(0).toUpperCase() + word.slice(1);
-const createEventDestinationTemplate = (destination) => {
+const createDestinationTemplate = (destination) => {
   if(destination.description.length || destination.pictures.length) {
     const pictures = destination.pictures.map((picture) =>
       `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('');
@@ -26,7 +26,7 @@ const createEventDestinationTemplate = (destination) => {
   return '<section class="event__section  event__section--destination"></section>';
 };
 
-const createEventOffersTemplate = (event, offersByType) => {
+const createOffersTemplate = (event, offersByType) => {
   const {offers} = event;
 
   if(offersByType.length) {
@@ -59,7 +59,7 @@ const createEventOffersTemplate = (event, offersByType) => {
   return '<section class="event__section  event__section--offers"></section>';
 };
 
-const createEventType = (currentType) => (
+const createPointType = (currentType) => (
   Array.from(TYPES, (eventType) => {
     const isChecked = eventType === currentType ? 'checked' : '';
     return (`<div class="event__type-item">
@@ -68,8 +68,8 @@ const createEventType = (currentType) => (
                 </div>`);
   }).join('')
 );
-const createEventEditTemplate = (event, offersByType, destinations, destinationsNames, isNewEvent) => {
-  const {basePrice, dateFrom, dateTo, destination, type} = event;
+const createPointEditTemplate = (point, offersByType, destinations, destinationsNames, isNewEvent) => {
+  const {basePrice, dateFrom, dateTo, destination, type} = point;
 
   const price = isNewEvent && basePrice === 0 ? '' : basePrice;
   const rollUpButton = isNewEvent ? '' :
@@ -90,7 +90,7 @@ const createEventEditTemplate = (event, offersByType, destinations, destinations
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-                ${createEventType(type)}
+                ${createPointType(type)}
               </fieldset>
             </div>
           </div>
@@ -122,14 +122,14 @@ const createEventEditTemplate = (event, offersByType, destinations, destinations
           ${rollUpButton}
         </header>
         <section class="event__details">
-        ${createEventOffersTemplate(event, offersByType)}
-        ${createEventDestinationTemplate(currentDestination)}
+        ${createOffersTemplate(point, offersByType)}
+        ${createDestinationTemplate(currentDestination)}
         </section>
       </form>
     </li>`
   );
 };
-export default class EventEditView extends AbstractStatefulView {
+export default class PointEditView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datePickerTo = null;
   #datepicker = null;
@@ -137,15 +137,15 @@ export default class EventEditView extends AbstractStatefulView {
   #offersByCurrentType;
   #destinations;
   #destinationsNames;
-  #isNewEvent;
-  constructor (event, offersByType, destinations, isNewEvent = false) {
+  #isNewPoint;
+  constructor (point, offersByType, destinations, isNewPoint = false) {
     super();
-    this._state = EventEditView.parseEventToState(event);
+    this._state = PointEditView.parsePointToState(point);
     this.#offersByType = offersByType;
-    this.#offersByCurrentType = this.#offersByType.length ? this.#offersByType.find((offer) => offer.type === event.type).offers : [];
+    this.#offersByCurrentType = this.#offersByType.length ? this.#offersByType.find((offer) => offer.type === point.type).offers : [];
     this.#destinations = destinations;
     this.#destinationsNames = Array.from(this.#destinations, (destination) => destination.name);
-    this.#isNewEvent = isNewEvent;
+    this.#isNewPoint = isNewPoint;
     this.#setInnerHandlers();
     this.#setDatepickerFrom();
     this.#setDatepickerTo();
@@ -153,7 +153,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   get template()
   {
-    return createEventEditTemplate(this._state, this.#offersByCurrentType, this.#destinations, this.#destinationsNames, this.#isNewEvent);
+    return createPointEditTemplate(this._state, this.#offersByCurrentType, this.#destinations, this.#destinationsNames, this.#isNewPoint);
   }
 
   _restoreHandlers = () => {
@@ -161,7 +161,7 @@ export default class EventEditView extends AbstractStatefulView {
     this.#setDatepickerFrom();
     this.#setDatepickerTo();
     this.setFormSubmitHandler(this._callback.formSubmit);
-    if(!this.#isNewEvent) {
+    if(!this.#isNewPoint) {
       this.setFormCloseClickHandler(this._callback.formCloseClick);
     }
     this.setFormDeleteHandler(this._callback.formDelete);
@@ -185,7 +185,7 @@ export default class EventEditView extends AbstractStatefulView {
   #onFormDeleteClick = (evt) => {
     evt.preventDefault();
 
-    this._callback.formDelete(EventEditView.parseStateToEvent(this._state));
+    this._callback.formDelete(PointEditView.parseStateToEvent(this._state));
   };
 
   #dateFromChangeHandler = ([userDate]) => {
@@ -230,7 +230,7 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
-  static parseEventToState = (event) => ({...event, dateTo: dayjs(event.dateTo).toDate(), dateFrom: dayjs(event.dateFrom).toDate()});
+  static parsePointToState = (point) => ({...point, dateTo: dayjs(point.dateTo).toDate(), dateFrom: dayjs(point.dateFrom).toDate()});
 
   static parseStateToEvent = (state) => ({...state});
 
@@ -242,14 +242,14 @@ export default class EventEditView extends AbstractStatefulView {
     });
   };
 
-  #onOfferClick = (event) => {
-    if(event.target.tagName !== 'INPUT') {
+  #onOfferClick = (evt) => {
+    if(evt.target.tagName !== 'INPUT') {
       return;
     }
 
-    event.preventDefault();
+    evt.preventDefault();
 
-    const newOffer = this.#offersByCurrentType.find((offer) => offer.title === event.target.dataset.offerTitle).id;
+    const newOffer = this.#offersByCurrentType.find((offer) => offer.title === evt.target.dataset.offerTitle).id;
 
     if(this._state.offers.includes(newOffer)) {
       this._state.offers.splice(this._state.offers.indexOf(newOffer), 1);
@@ -320,13 +320,13 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('#event-price-1').addEventListener('input', this.#onPriceInput);
   };
 
-  reset(event) {
-    this.#updateOffersByCurrentType(event.type);
+  reset(evt) {
+    this.#updateOffersByCurrentType(evt.type);
 
     this.updateElement({
-      offers: event.offers,
+      offers: evt.offers,
     });
 
-    this.updateElement(EventEditView.parseEventToState(event));
+    this.updateElement(PointEditView.parsePointToState(evt));
   }
 }

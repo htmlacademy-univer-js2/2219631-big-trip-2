@@ -1,48 +1,52 @@
-import EventListView from '../view/event-list-view';
+import PointsListView from '../view/points-list-view';
 import SortView from '../view/sort-view';
+import LoadingView from '../view/loading-view';
+import EmptyPointsList from '../view/empty-points-list-view';
 import { render, remove} from '../framework/render';
-import EmptyTripEventsList from '../view/event-empty';
 import { filter } from '../utils/filter';
 import EventPresenter from './event-presenter';
+import EventNewPresenter from './event-new-presenter';
 import { sortEventsByType } from '../utils/sort';
 import { UserAction, UpdateType, FilterTypes, SortType } from '../const';
-import EventNewPresenter from './event-new-presenter';
-import LoadingView from '../view/loading-view';
 
 
 export default class EventBoardPresenter{
-  #eventsModel;
-  #offersModel;
+  #pointsModel;
+  #offersByTypeModel;
   #destinationModel;
-  #eventsComponent;
-  #eventsList;
   #filterModel;
-  #noEventsMessage = null;
-  #eventPresenter;
-  #eventNewPresenter;
+
+  #pointsComponent;
+  #pointsList;
+  #noPointsMessage = null;
+
+  #pointPresenter;
+  #pointNewPresenter;
+
   #sortComponent;
   #currentSortType = SortType.DAY;
+
   #loadingComponent = new LoadingView();
   #isLoading = true;
 
-  constructor(eventsComponent, eventsModel, offersModel, destinationModel, filterModel) {
-    this.#eventsModel = eventsModel;
-    this.#offersModel = offersModel;
+  constructor(pointsComponent, pointsModel, offersByTypeModel, destinationModel, filterModel) {
+    this.#pointsModel = pointsModel;
+    this.#offersByTypeModel = offersByTypeModel;
     this.#destinationModel = destinationModel;
     this.#filterModel = filterModel;
 
-    this.#eventsComponent = eventsComponent;
-    this.#eventsList = new EventListView();
+    this.#pointsComponent = pointsComponent;
+    this.#pointsList = new PointsListView();
 
-    this.#eventPresenter = new Map();
-    this.#eventNewPresenter = new EventNewPresenter(this.#eventsList.element, this.#offersModel.offers,
+    this.#pointPresenter = new Map();
+    this.#pointNewPresenter = new EventNewPresenter(this.#pointsList.element, this.#offersByTypeModel.offersByType,
       this.#destinationModel.destinations, this.#handleViewAction);
 
     this.#sortComponent = null;
     this.#currentSortType = SortType.DAY;
 
-    this.#eventsModel.addObserver(this.#handleModelEvent);
-    this.#offersModel.addObserver(this.#handleModelEvent);
+    this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#offersByTypeModel.addObserver(this.#handleModelEvent);
     this.#destinationModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
@@ -51,15 +55,15 @@ export default class EventBoardPresenter{
     this.#renderBoard();
   }
 
-  get tripEvents() {
-    const filteredTripEvents = filter[this.#filterModel.filterType]([...this.#eventsModel.tripEvents]);
-    return sortEventsByType[this.#currentSortType](filteredTripEvents);
+  get points() {
+    const filteredPoints = filter[this.#filterModel.filterType]([...this.#pointsModel.points]);
+    return sortEventsByType[this.#currentSortType](filteredPoints);
   }
 
-  createTripEvent(destroyCallback) {
+  createPoint(destroyCallback) {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilterType(UpdateType.MAJOR, FilterTypes.EVERYTHING);
-    this.#eventNewPresenter.init(destroyCallback);
+    this.#pointNewPresenter.init(destroyCallback);
   }
 
   #renderBoard() {
@@ -68,58 +72,57 @@ export default class EventBoardPresenter{
       return;
     }
 
-    if(!this.tripEvents.length){
-      this.#renderNoEventsMessage();
+    if(!this.points.length){
+      this.#renderNoPointsMessage();
       return;
     }
 
     this.#renderSort();
-    this.#renderEventsList();
+    this.#renderPointsList();
   }
 
-  #renderNoEventsMessage() {
-    this.#noEventsMessage = new EmptyTripEventsList(this.#filterModel.filterType);
-    render(this.#noEventsMessage, this.#eventsComponent);
+  #renderNoPointsMessage() {
+    this.#noPointsMessage = new EmptyPointsList(this.#filterModel.filterType);
+    render(this.#noPointsMessage, this.#pointsComponent);
   }
 
   #renderSort() {
-    //render(new SortView(), this.#tripEventsComponent);
     this.#sortComponent = new SortView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-    render(this.#sortComponent, this.#eventsComponent);
+    render(this.#sortComponent, this.#pointsComponent);
   }
 
-  #renderEventsList() {
-    render(this.#eventsList, this.#eventsComponent);
-    this.#renderEvents();
+  #renderPointsList() {
+    render(this.#pointsList, this.#pointsComponent);
+    this.#renderPoints();
   }
 
-  #renderEvents() {
-    this.tripEvents.forEach((tripEvent) => this.#renderEvent(tripEvent));
+  #renderPoints() {
+    this.points.forEach((point) => this.#renderPoint(point));
   }
 
-  #renderEvent(event) {
-    const eventPresenter = new EventPresenter(this.#eventsList.element, this.#offersModel.offers,this.#destinationModel.destinations ,this.#handleViewAction, this.#onEventModeChange);
-    eventPresenter.init(event);
-    this.#eventPresenter.set(event.id, eventPresenter);
+  #renderPoint(point) {
+    const pointPresenter = new EventPresenter(this.#pointsList.element, this.#offersByTypeModel.offersByType,this.#destinationModel.destinations ,this.#handleViewAction, this.#onPointModeChange);
+    pointPresenter.init(point);
+    this.#pointPresenter.set(point.id, pointPresenter);
   }
 
   #renderLoading() {
-    render(this.#loadingComponent, this.#eventsComponent);
+    render(this.#loadingComponent, this.#pointsComponent);
   }
 
   #clearBoard(sortType) {
-    this.#eventNewPresenter.destroy();
+    this.#pointNewPresenter.destroy();
 
-    this.#eventPresenter.forEach((point) => point.destroy());
-    this.#eventPresenter.clear();
+    this.#pointPresenter.forEach((point) => point.destroy());
+    this.#pointPresenter.clear();
 
     remove(this.#sortComponent);
     remove(this.#loadingComponent);
-    remove(this.#noEventsMessage);
+    remove(this.#noPointsMessage);
 
-    if(this.#noEventsMessage) {
-      remove(this.#noEventsMessage);
+    if(this.#noPointsMessage) {
+      remove(this.#noPointsMessage);
     }
 
     this.#currentSortType = sortType;
@@ -127,14 +130,14 @@ export default class EventBoardPresenter{
 
   #handleViewAction = (userActionType, updateType, updatedItem) => {
     switch(userActionType) {
-      case UserAction.ADD_TRIP_EVENT:
-        this.#eventsModel.addTripEvent(updateType, updatedItem);
+      case UserAction.ADD_POINT:
+        this.#pointsModel.addPont(updateType, updatedItem);
         break;
-      case UserAction.UPDATE_TRIP_EVENT:
-        this.#eventsModel.updateTripEvent(updateType, updatedItem);
+      case UserAction.UPDATE_POINT:
+        this.#pointsModel.updatePoint(updateType, updatedItem);
         break;
-      case UserAction.DELETE_TRIP_EVENT:
-        this.#eventsModel.deleteTripEvent(updateType, updatedItem);
+      case UserAction.DELETE_POINT:
+        this.#pointsModel.deletePoint(updateType, updatedItem);
         break;
     }
   };
@@ -142,7 +145,7 @@ export default class EventBoardPresenter{
   #handleModelEvent = (updateType, updatedItem) => {
     switch(updateType) {
       case UpdateType.PATCH:
-        this.#eventPresenter.get(updatedItem.id).init(updatedItem);
+        this.#pointPresenter.get(updatedItem.id).init(updatedItem);
         break;
       case UpdateType.MINOR:
         this.#clearBoard(this.#currentSortType);
@@ -153,10 +156,10 @@ export default class EventBoardPresenter{
         this.#renderBoard();
         break;
       case UpdateType.INIT:
-        if(this.#eventsModel.tripEvents.length && this.#offersModel.offers.length && this.#destinationModel.destinations.length){
-        this.#isLoading = false;
-        remove(this.#loadingComponent);
-        this.#renderBoard();}
+        if(this.#pointsModel.points.length && this.#offersByTypeModel.offersByType.length && this.#destinationModel.destinations.length){
+          this.#isLoading = false;
+          remove(this.#loadingComponent);
+          this.#renderBoard();}
         break;
     }
   };
@@ -169,7 +172,7 @@ export default class EventBoardPresenter{
     this.#renderBoard();
   };
 
-  #onEventModeChange = () => {
-    this.#eventPresenter.forEach((tripEvent) => tripEvent.resetTripEventMode());
+  #onPointModeChange = () => {
+    this.#pointPresenter.forEach((point) => point.resetPointMode());
   };
 }

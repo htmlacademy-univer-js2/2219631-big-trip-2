@@ -1,4 +1,4 @@
-import EventEditView from '../view/event-edit-view';
+import PointEditView from '../view/point-edit-view';
 import { RenderPosition, remove, render } from '../framework/render';
 import { UserAction, UpdateType, TYPES } from '../const';
 import {nanoid} from 'nanoid';
@@ -14,7 +14,7 @@ const DEFAULT_EVENT = {
   type: TYPES[0],
 };
 export default class EventNewPresenter{
-    #tripEventsListContainer;
+    #PointsListContainer;
     #addFormComponent = null;
 
     #offersByType;
@@ -22,8 +22,8 @@ export default class EventNewPresenter{
 
     #changeData;
     #destroyCallback = null;
-    constructor(tripEventsListContainer, offersByType, destinations, changeData) {
-      this.#tripEventsListContainer = tripEventsListContainer;
+    constructor(pointsListContainer, offersByType, destinations, changeData) {
+      this.#PointsListContainer = pointsListContainer;
 
       this.#offersByType = offersByType;
       this.#destinations = destinations;
@@ -55,18 +55,18 @@ export default class EventNewPresenter{
         return;
       }
 
-      this.#addFormComponent = new EventEditView(DEFAULT_EVENT, this.#offersByType, this.#destinations, true);
+      this.#addFormComponent = new PointEditView(DEFAULT_EVENT, this.#offersByType, this.#destinations, true);
 
       this.#addFormComponent.setFormSubmitHandler(this.#onFormSubmit);
       this.#addFormComponent.setFormDeleteHandler(this.#onCancelButtonClick);
 
-      render(this.#addFormComponent, this.#tripEventsListContainer, RenderPosition.AFTERBEGIN);
+      render(this.#addFormComponent, this.#PointsListContainer, RenderPosition.AFTERBEGIN);
 
       document.addEventListener('keydown', this.#onEscapeKeyDown);
     }
 
-      #onFormSubmit = (tripEvent) => {
-        this.#changeData(UserAction.ADD_TRIP_EVENT, UpdateType.MINOR, {id: nanoid(), ...tripEvent});
+      #onFormSubmit = (point) => {
+        this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, {id: nanoid(), ...point});
         this.destroy();
       };
 

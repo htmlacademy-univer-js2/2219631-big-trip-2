@@ -5,7 +5,7 @@ const Method = {
   PUT: 'PUT',
 };
 
-export default class EventsApiService extends ApiService {
+export default class PointsApiService extends ApiService {
   get points() {
     return this._load({url: 'points'}).then(ApiService.parseResponse);
   }
@@ -32,20 +32,20 @@ export default class EventsApiService extends ApiService {
   };
 
 
-  #adaptToServer = (event) => {
-    const adaptedEvent = {...event,
-      'base_price': event.base_price,
-      'date_from': event.date_from,
-      'date_to': event.date_to,
-      'is_favorite': event.isFavorite,
+  #adaptToServer = (point) => {
+    const adaptedPoint = {...point,
+      'base_price': point.base_price,
+      'date_from': point.date_from,
+      'date_to': point.date_to,
+      'is_favorite': point.isFavorite,
     };
 
     // Ненужные ключи мы удаляем
-    delete adaptedEvent.base_price;
-    delete adaptedEvent.date_from;
-    delete adaptedEvent.date_to;
-    delete adaptedEvent.isFavorite;
+    delete adaptedPoint.base_price;
+    delete adaptedPoint.date_from;
+    delete adaptedPoint.date_to;
+    delete adaptedPoint.isFavorite;
 
-    return adaptedEvent;
+    return adaptedPoint;
   };
 }
