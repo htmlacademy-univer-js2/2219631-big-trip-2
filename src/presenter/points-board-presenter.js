@@ -138,7 +138,6 @@ export default class PointsBoardPresenter{
     this.#uiBlocker.block();
     switch(userActionType) {
       case UserAction.ADD_POINT:
-        //this.#pointPresenter.setSaving();
         this.#pointNewPresenter.setSaving();
         try {
           await this.#pointsModel.addPoint(updateType, update);
