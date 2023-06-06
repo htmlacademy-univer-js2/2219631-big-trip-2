@@ -12,11 +12,11 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
   );
 };
 
-const createFilterTemplate = (filterItem, currentFilterType) => {
-  const filterItems = filterItem.map((filterItem1)=>createFilterItemTemplate(filterItem1, currentFilterType)).join('');
+const createFilterTemplate = (filterItems, currentFilterType) => {
+  const filterItemsTemplate = filterItems.map((filter)=>createFilterItemTemplate(filter, currentFilterType)).join('');
   return (
     `<form class="trip-filters" action="#" method="get">
-      ${filterItems}
+      ${filterItemsTemplate}
       <button class="visually-hidden" type="submit">Accept filter</button>
     </form>`
   );
@@ -38,10 +38,10 @@ export default class FilterView extends AbstractView {
 
   setFilterTypeChangeHandler(callback) {
     this._callback.filterTypeChange = callback;
-    this.element.addEventListener('change', this.#onFilterTypeChange);
+    this.element.addEventListener('change', this.#filterTypeChangeHandler);
   }
 
-  #onFilterTypeChange = (evt) => {
+  #filterTypeChangeHandler = (evt) => {
     evt.preventDefault();
     this._callback.filterTypeChange(evt.target.value);
   };

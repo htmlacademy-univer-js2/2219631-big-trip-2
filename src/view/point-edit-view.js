@@ -76,7 +76,6 @@ const createPointEditTemplate = (point, offersByType, destinations, destinations
   const currentDestination = destinations.find((place) => place.id === destination);
   const disabledTag = isDisabled ? 'disabled' : '';
   const deleteMessage = isDeleting ? 'Deleting...' : 'Delete';
-  const savingMessage = isSaving ? 'Saving...' : 'Save';
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -117,7 +116,7 @@ const createPointEditTemplate = (point, offersByType, destinations, destinations
             </label>
             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${disabledTag}>
           </div>
-          <button class="event__save-btn  btn  btn--blue" type="submit" ${disabledTag}>${savingMessage}</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${disabledTag}>${isSaving ? 'Saving...' : 'Save'}</button>
           <button class="event__reset-btn" type="reset" ${disabledTag}>${isNewEvent ? 'Cancel' : deleteMessage}</button>
           ${rollUpButton}
         </header>
@@ -154,6 +153,45 @@ export default class PointEditView extends AbstractStatefulView {
     return createPointEditTemplate(this._state, this.#offersByCurrentType, this.#destinations, this.#destinationsNames, this.#isNewPoint);
   }
 
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker = null;
+    }
+  };
+
+  reset(point) {
+    this.#updateOffersByCurrentType(point.type);
+
+    this.updateElement({
+      offers: point.offers,
+    });
+
+    this.updateElement(PointEditView.parsePointToState(point));
+  }
+
+  #updateOffersByCurrentType(newType) {
+    this.#offersByCurrentType = this.#offersByType.length ? this.#offersByType.find((offer) => offer.type === newType).offers : [];
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  setFormCloseClickHandler(callback) {
+    this._callback.formCloseClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseClickHandler);
+  }
+
+  setFormDeleteHandler(callback) {
+    this._callback.formDelete = callback;
+
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
+  }
+
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.#setDatepickerFrom();
@@ -165,20 +203,21 @@ export default class PointEditView extends AbstractStatefulView {
     this.setFormDeleteHandler(this._callback.formDelete);
   };
 
-  removeElement = () => {
-    super.removeElement();
-
-    if (this.#datepicker) {
-      this.#datepicker.destroy();
-      this.#datepicker = null;
-    }
-  };
-
-  setFormDeleteHandler(callback) {
-    this._callback.formDelete = callback;
-
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onFormDeleteClick);
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit(PointEditView.parseStateToPoint(this._state));
   }
+
+  #formCloseClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formCloseClick();
+  }
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+
+    this._callback.formDelete(PointEditView.parseStateToPoint(this._state));
+  };
 
   #dateFromChangeHandler = ([userDate]) => {
     this.updateElement({
@@ -222,23 +261,7 @@ export default class PointEditView extends AbstractStatefulView {
     }
   };
 
-  static parsePointToState(point){
-    return{...point,
-      isDisabled: false,
-      isSaving: false,
-      isDeleting: false,
-    };
-  }
-
-  static parseStateToPoint(state){
-    const point = {...state};
-    delete point.isDisabled;
-    delete point.isSaving;
-    delete point.isDeleting;
-    return point;
-  }
-
-  #onPriceInput = (evt) => {
+  #priceInputHandler = (evt) => {
     evt.preventDefault();
 
     this._setState({
@@ -246,7 +269,7 @@ export default class PointEditView extends AbstractStatefulView {
     });
   };
 
-  #onOfferClick = (evt) => {
+  #offerClickHandler = (evt) => {
     if(evt.target.tagName !== 'INPUT') {
       return;
     }
@@ -266,17 +289,13 @@ export default class PointEditView extends AbstractStatefulView {
     });
   };
 
-  #updateOffersByCurrentType(newType) {
-    this.#offersByCurrentType = this.#offersByType.length ? this.#offersByType.find((offer) => offer.type === newType).offers : [];
-  }
-
-  #onPointTypeClick = (evt) => {
+  #pointTypeClickHandler = (evt) => {
     if(evt.target.tagName !== 'INPUT') {
       return;
     }
 
     evt.preventDefault();
-
+    this._state.offers = [];
     this.#updateOffersByCurrentType(evt.target.value);
 
     this.updateElement({
@@ -284,7 +303,7 @@ export default class PointEditView extends AbstractStatefulView {
     });
   };
 
-  #onPointPlaceChange = (evt) => {
+  #pointPlaceChangeHandler = (evt) => {
     if(!this.#destinationsNames.includes(evt.target.value)) {
       return;
     }
@@ -295,48 +314,28 @@ export default class PointEditView extends AbstractStatefulView {
     });
   };
 
-  setFormSubmitHandler(callback) {
-    this._callback.formSubmit = callback;
-    this.element.querySelector('form').addEventListener('submit', this.#onFormSubmit);
-  }
-
-  setFormCloseClickHandler(callback) {
-    this._callback.formCloseClick = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormCloseClick);
-  }
-
-  #onFormSubmit = (evt) => {
-    evt.preventDefault();
-    this._callback.formSubmit(PointEditView.parseStateToPoint(this._state));
-  }
-
-  #onFormCloseClick = (evt) => {
-    evt.preventDefault();
-    this._callback.formCloseClick();
-  }
-
-  #onFormDeleteClick = (evt) => {
-    evt.preventDefault();
-
-    this._callback.formDelete(PointEditView.parseStateToPoint(this._state));
-  };
-
   #setInnerHandlers = () => {
-    this.element.querySelector('.event__type-group').addEventListener('click', this.#onPointTypeClick);
-    this.element.querySelector('#event-destination-1').addEventListener('change', this.#onPointPlaceChange);
+    this.element.querySelector('.event__type-group').addEventListener('click', this.#pointTypeClickHandler);
+    this.element.querySelector('#event-destination-1').addEventListener('change', this.#pointPlaceChangeHandler);
     if(this.#offersByType.length && this.#offersByCurrentType.length) {
-      this.element.querySelector('.event__available-offers').addEventListener('click', this.#onOfferClick);
+      this.element.querySelector('.event__available-offers').addEventListener('click', this.#offerClickHandler);
     }
-    this.element.querySelector('#event-price-1').addEventListener('input', this.#onPriceInput);
+    this.element.querySelector('#event-price-1').addEventListener('input', this.#priceInputHandler);
   };
 
-  reset(evt) {
-    this.#updateOffersByCurrentType(evt.type);
+  static parsePointToState(point){
+    return{...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
+  }
 
-    this.updateElement({
-      offers: evt.offers,
-    });
-
-    this.updateElement(PointEditView.parsePointToState(evt));
+  static parseStateToPoint(state){
+    const point = {...state};
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+    return point;
   }
 }

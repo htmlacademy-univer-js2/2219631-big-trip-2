@@ -57,13 +57,13 @@ export default class PointsBoardPresenter{
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
-  init() {
-    this.#renderBoard();
-  }
-
   get points() {
     const filteredPoints = filter[this.#filterModel.filterType]([...this.#pointsModel.points]);
     return sortPointsByType[this.#currentSortType](filteredPoints);
+  }
+
+  init() {
+    this.#renderBoard();
   }
 
   createPoint(destroyCallback) {
